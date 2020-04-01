@@ -4,8 +4,19 @@ public class ToDoItemStatus {
 
     private String status;
 
-    public String setComplete(){
+    public ToDoItemStatus(){
+        this.status = "In Progress";
+    }
 
-        return null;
+    public void setComplete(){
+        this.status = "Complete";
+    }
+
+    public void setSnoozed(){
+        this.status = "Snoozed";
+    }
+
+    public void setInProgress(){
+        this.status = "In Progress";
     }
 }

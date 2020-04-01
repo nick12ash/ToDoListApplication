@@ -4,7 +4,7 @@ import java.util.List;
 
 public class User {
 
-    private String name;
+    public String name;
     private List<ToDoItem> userToDoList;
     private StatisticsModel statisticsModel;
 
@@ -14,6 +14,21 @@ public class User {
 
     public List<ToDoItem> organizeItems(){
         return null;
+    }
+
+    public void addToDoItem(String about, String owner, TimeStamp dueDate){
+        userToDoList.add(new ToDoItem(about, owner, dueDate));
+    }
+
+    public void viewToDoItems(){
+
+    }
+    public void editToDoItem(ToDoItem itemToEdit){
+
+    }
+
+    public void removeToDoItem(ToDoItem itemToRemove){
+        userToDoList.remove(itemToRemove);
     }
 
     public boolean syncItems(){
