@@ -8,10 +8,12 @@ public class TimeStamp {
     private int hour;
     private int minute;
     private int second;
+    private String formattedTimestamp;
 
 
     // Formatted TimeStamp looks like 2017-01-23T18:35:23.669Z
     public TimeStamp(String formattedTimeStamp){
+        this.formattedTimestamp = formattedTimeStamp;
         this.year = Integer.parseInt(formattedTimeStamp.substring(0,4));
         this.month = Integer.parseInt(formattedTimeStamp.substring(5,7));
         this.day = Integer.parseInt(formattedTimeStamp.substring(8,10));
@@ -27,6 +29,10 @@ public class TimeStamp {
         this.hour = 0;
         this.minute = 0;
         this.second = 0;
+    }
+
+    public String getFormattedTimeStamp(){
+        return formattedTimestamp;
     }
 
     public int getYear() {

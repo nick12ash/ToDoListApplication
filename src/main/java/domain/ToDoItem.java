@@ -1,26 +1,44 @@
 package domain;
 
 
+import com.google.gson.annotations.SerializedName;
+
 public class ToDoItem {
 
-    private String about;
-    private String owner;
-    private ToDoItemStatus status;
-    private String itemCategory;
-    private TimeStamp reminder;
-    private TimeStamp dueDate;
-    private TimeStamp createdDate;
-    private TimeStamp completedDate;
+    public int id;
 
-    public ToDoItem(String about, String owner, TimeStamp dueDate){
+    @SerializedName(value = "about", alternate = "memo")
+    public String about;
+
+    @SerializedName(value = "owner", alternate = "user")
+    public String owner;
+
+    @SerializedName(value = "due_date", alternate = "due-date")
+    public TimeStamp dueDate;
+
+    public ToDoItemStatus status;
+
+    public String itemCategory = "Unsorted";
+    public TimeStamp reminder;
+
+
+
+    public TimeStamp createdDate;
+
+
+    public TimeStamp completedDate;
+
+    public ToDoItem(String about, String owner, String dueDate){
         this.about = about;
         this.owner = owner;
-        this.dueDate = dueDate;
+        this.dueDate = new TimeStamp(dueDate);
         this.createdDate = new TimeStamp(java.time.Clock.systemUTC().instant().toString());
         this.status = new ToDoItemStatus();
     }
 
-    public void setItemCategory(String category)
+    public void setItemCategory(String category){
+        this.itemCategory = category;
+    }
 
 
 }

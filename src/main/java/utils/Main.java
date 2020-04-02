@@ -18,14 +18,14 @@ public class Main {
                 String name = br.readLine();
                 User user = new User(name);
 
-                System.out.println("What would you like to do?\n[A]dd a To Do item\n[E]dit a To Do item\n[S]ync to the cloud?");
+                System.out.println("What would you like to do?\n[M]ake a To Do item\n[E]dit a To Do item\n[S]ync to the cloud?");
                 String action = br.readLine();
-                if (action.contentEquals("A")){
+                if (action.contentEquals("M")){
                     System.out.println("What is the memo?: ");
                     String memo = br.readLine();
                     System.out.println("What is the Due date?: ");
                     String dueDate = br.readLine();
-                    ToDoItem toDoItem = new ToDoItem(memo, user.name, new TimeStamp(dueDate));
+                    ToDoItem toDoItem = new ToDoItem(memo, user.name, dueDate);
                 }
             }
         }

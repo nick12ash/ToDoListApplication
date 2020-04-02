@@ -19,4 +19,8 @@ public class ToDoItemStatus {
     public void setInProgress(){
         this.status = "In Progress";
     }
+
+    public String getStatus(){
+        return status;
+    }
 }

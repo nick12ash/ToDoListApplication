@@ -1,5 +1,9 @@
 package domain;
 
+import exceptions.ParameterIsEmptyException;
+import utils.CloudUtils;
+
+import java.io.IOException;
 import java.util.List;
 
 public class User {
@@ -16,13 +20,14 @@ public class User {
         return null;
     }
 
-    public void addToDoItem(String about, String owner, TimeStamp dueDate){
+    public void makeToDoItem(String about, String owner, String dueDate){
         userToDoList.add(new ToDoItem(about, owner, dueDate));
     }
 
     public void viewToDoItems(){
 
     }
+
     public void editToDoItem(ToDoItem itemToEdit){
 
     }
@@ -31,7 +36,15 @@ public class User {
         userToDoList.remove(itemToRemove);
     }
 
-    public boolean syncItems(){
-        return false;
+    public boolean syncItemsToCloud(){
+        CloudUtils cloudUtils = new CloudUtils();
+        try {
+            cloudUtils.uploadItemsToCloud(userToDoList);
+        } catch (IOException e){
+            e.printStackTrace();
+        } catch (ParameterIsEmptyException e){
+            System.out.println("Can't upload nothing to the cloud");
+        }
+        return cloudUtils.checkConnection();
     }
 }
