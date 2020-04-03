@@ -42,8 +42,6 @@ public class User {
             cloudUtils.uploadItemsToCloud(userToDoList);
         } catch (IOException e){
             e.printStackTrace();
-        } catch (ParameterIsEmptyException e){
-            System.out.println("Can't upload nothing to the cloud");
         }
         return cloudUtils.checkConnection();
     }

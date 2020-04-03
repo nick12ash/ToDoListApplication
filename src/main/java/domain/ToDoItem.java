@@ -40,5 +40,16 @@ public class ToDoItem {
         this.itemCategory = category;
     }
 
+    public String getUniqueItemID(){
+        return about+owner+dueDate.getFormattedTimeStamp();
+    }
+
+    public boolean isEmpty(){
+        if (this.about == "" && this.owner == "") {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 }

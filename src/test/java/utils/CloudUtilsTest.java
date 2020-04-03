@@ -26,34 +26,60 @@ class CloudUtilsTest {
 
     @Test
     void checkConnection(){
-        try{ assertEquals(true, cloudUtils.checkConnection());}
+        assertEquals(true, cloudUtils.checkConnection());
     }
 
 
     @Test
     void cloudUploadsAndDownloadsOneItem() throws IOException, ParameterIsEmptyException, ParameterIsNotJsonStringException {
         list.add(todoItem1);
+
+
         cloudUtils.uploadItemsToCloud(list);
         list2 = cloudUtils.parseJSONString(cloudUtils.retrieveCloud());
-        assertTrue(!list2.isEmpty());
+
+
+        assertEquals(list.get(0).getUniqueItemID(), list2.get(0).getUniqueItemID());
+
+        cloudUtils.deleteTodoItem(1);
     }
 
     @Test
-    void cloudUploadsNoItems() {
+    void cloudUploadsNoItems() throws IOException, ParameterIsEmptyException, ParameterIsNotJsonStringException {
+        list.add(null);
 
+        assertEquals(0, cloudUtils.uploadItemsToCloud(list));
+        list2 = cloudUtils.parseJSONString(cloudUtils.retrieveCloud());
+
+        assertEquals("Cloud is emptyYou big dummy0000-00-00T00:00:00.0000", list2.get(0).getUniqueItemID());
     }
 
     @Test
     void cloudUploadsMultipleItems() throws IOException, ParameterIsEmptyException, ParameterIsNotJsonStringException {
         list.add(todoItem1);
         list.add(todoItem2);
+
+
         cloudUtils.uploadItemsToCloud(list);
         list2 = cloudUtils.parseJSONString(cloudUtils.retrieveCloud());
-        assertEquals(list.get(0).about, list2.get(0).about);
+
+
+        assertEquals(list.get(0).getUniqueItemID(), list2.get(0).getUniqueItemID());
+        assertEquals(list.get(1).getUniqueItemID(), list2.get(1).getUniqueItemID());
+
+
+        cloudUtils.deleteTodoItem(1);
+        cloudUtils.deleteTodoItem(2);
     }
 
     @Test
-    void canDeleteItems() {
-        cloudUtils.deleteTodoItem(1);
+    void deleteCloudWorks() throws ParameterIsNotJsonStringException {
+        cloudUtils.clearTheCloud();
+
+        list2 = cloudUtils.parseJSONString(cloudUtils.retrieveCloud());
+
+        assertEquals("Cloud is emptyYou big dummy0000-00-00T00:00:00.0000", list2.get(0).getUniqueItemID());
+
     }
+
 }

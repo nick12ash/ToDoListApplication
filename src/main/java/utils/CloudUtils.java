@@ -34,30 +34,36 @@ public class CloudUtils {
         }
     }
 
-    public void uploadItemsToCloud(List<ToDoItem> toDoItemList) throws IOException, ParameterIsEmptyException {
+    public int uploadItemsToCloud(List<ToDoItem> toDoItemList) throws IOException{
         Map<String, Object> data = new LinkedHashMap<>();
-        if (toDoItemList.isEmpty()){
-            throw new ParameterIsEmptyException();
-        }
-        for (ToDoItem tdi : toDoItemList){
-            data.put("memo", tdi.about);
-            data.put("owner", tdi.owner);
-            data.put("due_date", tdi.dueDate.getFormattedTimeStamp());
-            data.put("created_date", tdi.createdDate.getFormattedTimeStamp());
-            data.put("status", tdi.status.getStatus());
-            data.put("category", tdi.itemCategory);
-            HttpContent content = new UrlEncodedContent(data);
-            HttpRequest postRequest = requestFactory.buildPostRequest(
-                    new GenericUrl(todosURL),content);
-            postRequest.execute();
+        try {
+            for (ToDoItem tdi : toDoItemList) {
+                data.put("memo", tdi.about);
+                data.put("owner", tdi.owner);
+                data.put("due_date", tdi.dueDate.getFormattedTimeStamp());
+                data.put("created_date", tdi.createdDate.getFormattedTimeStamp());
+                data.put("status", tdi.status.getStatus());
+                data.put("category", tdi.itemCategory);
+                HttpContent content = new UrlEncodedContent(data);
+                HttpRequest postRequest = requestFactory.buildPostRequest(
+                        new GenericUrl(todosURL), content);
+                postRequest.execute();
+            }
+            return 1;
+        } catch (NullPointerException e){
+            return 0;
         }
     }
 
-    public String retrieveCloud() throws IOException {
-        HttpRequest getRequest = requestFactory.buildGetRequest(
-                new GenericUrl(todosURL));
-        String rawResponse = getRequest.execute().parseAsString();
-        return rawResponse;
+    public String retrieveCloud(){
+        try{
+            HttpRequest getRequest = requestFactory.buildGetRequest(new GenericUrl(todosURL));
+            String rawResponse = getRequest.execute().parseAsString();
+            return rawResponse;
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        return "";
     }
 
 
@@ -69,11 +75,15 @@ public class CloudUtils {
         JsonParser jsonParser = new JsonParser();
         JsonElement rootElement = jsonParser.parse(jsonString);
         JsonArray rootObjects = rootElement.getAsJsonArray();
-        for (JsonElement rootObject : rootObjects){
-            var about = rootObject.getAsJsonObject().getAsJsonPrimitive("memo").getAsString();
-            var owner = rootObject.getAsJsonObject().getAsJsonPrimitive("owner").getAsString();
-            var dueDate = rootObject.getAsJsonObject().getAsJsonPrimitive("due_date").getAsString();
-            list.add(new ToDoItem(about,owner,dueDate));
+        if(rootObjects.size() > 0) {
+            for (JsonElement rootObject : rootObjects) {
+                var about = rootObject.getAsJsonObject().getAsJsonPrimitive("memo").getAsString();
+                var owner = rootObject.getAsJsonObject().getAsJsonPrimitive("owner").getAsString();
+                var dueDate = rootObject.getAsJsonObject().getAsJsonPrimitive("due_date").getAsString();
+                list.add(new ToDoItem(about, owner, dueDate));
+            }
+        } else {
+            list.add(new ToDoItem("Cloud is empty", "You big dummy", "0000-00-00T00:00:00.0000"));
         }
         return list;
     }
@@ -99,4 +109,14 @@ public class CloudUtils {
         }
     }
 
+    public void clearTheCloud(){
+        List<Integer> list = new LinkedList<>();
+        JsonParser jsonParser = new JsonParser();
+        JsonElement rootElement = jsonParser.parse(retrieveCloud());
+        JsonArray rootObjects = rootElement.getAsJsonArray();
+        for (JsonElement rootObject : rootObjects){
+            var number = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsInt();
+            deleteTodoItem(number);
+        }
+    }
 }
