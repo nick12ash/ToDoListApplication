@@ -1,10 +1,7 @@
 package utils;
 
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.javanet.NetHttpTransport;
 import domain.TimeStamp;
 import domain.ToDoItem;
-import exceptions.ParameterIsEmptyException;
 import exceptions.ParameterIsNotJsonStringException;
 import org.junit.jupiter.api.Test;
 
@@ -18,8 +15,8 @@ class CloudUtilsTest {
 
     CloudUtils cloudUtils = new CloudUtils();
 
-    ToDoItem todoItem1 = new ToDoItem("Reminder for grilled cheese", "Klemm", "2020-04-04T18:35:23.669Z");
-    ToDoItem todoItem2 = new ToDoItem("Don't forget the pana cotta", "Klemm", "2020-04-12T14:43:54.669Z");
+    ToDoItem todoItem1 = new ToDoItem("Reminder for grilled cheese", "Klemm", new TimeStamp("2020-04-04T18:35:23.669Z"));
+    ToDoItem todoItem2 = new ToDoItem("Don't forget the pana cotta", "Klemm", new TimeStamp("2020-04-12T14:43:54.669Z"));
 
     List<ToDoItem> list = new LinkedList<>();
     List<ToDoItem> list2 = new LinkedList<>();
@@ -31,12 +28,12 @@ class CloudUtilsTest {
 
 
     @Test
-    void cloudUploadsAndDownloadsOneItem() throws IOException, ParameterIsEmptyException, ParameterIsNotJsonStringException {
+    void cloudUploadsAndDownloadsOneItem() throws IOException, ParameterIsNotJsonStringException {
         list.add(todoItem1);
 
 
-        cloudUtils.uploadItemsToCloud(list);
-        list2 = cloudUtils.parseJSONString(cloudUtils.retrieveCloud());
+        cloudUtils.uploadListToCloud(list);
+        list2 = cloudUtils.parseCloudJSONString(cloudUtils.retrieveCloud());
 
 
         assertEquals(list.get(0).getUniqueItemID(), list2.get(0).getUniqueItemID());
@@ -45,23 +42,23 @@ class CloudUtilsTest {
     }
 
     @Test
-    void cloudUploadsNoItems() throws IOException, ParameterIsEmptyException, ParameterIsNotJsonStringException {
+    void cloudUploadsNoItems() throws IOException, ParameterIsNotJsonStringException {
         list.add(null);
 
-        assertEquals(0, cloudUtils.uploadItemsToCloud(list));
-        list2 = cloudUtils.parseJSONString(cloudUtils.retrieveCloud());
+        assertEquals(0, cloudUtils.uploadListToCloud(list));
+        list2 = cloudUtils.parseCloudJSONString(cloudUtils.retrieveCloud());
 
         assertEquals("Cloud is emptyYou big dummy0000-00-00T00:00:00.0000", list2.get(0).getUniqueItemID());
     }
 
     @Test
-    void cloudUploadsMultipleItems() throws IOException, ParameterIsEmptyException, ParameterIsNotJsonStringException {
+    void cloudUploadsMultipleItems() throws IOException, ParameterIsNotJsonStringException {
         list.add(todoItem1);
         list.add(todoItem2);
 
 
-        cloudUtils.uploadItemsToCloud(list);
-        list2 = cloudUtils.parseJSONString(cloudUtils.retrieveCloud());
+        cloudUtils.uploadListToCloud(list);
+        list2 = cloudUtils.parseCloudJSONString(cloudUtils.retrieveCloud());
 
 
         assertEquals(list.get(0).getUniqueItemID(), list2.get(0).getUniqueItemID());
@@ -76,10 +73,15 @@ class CloudUtilsTest {
     void deleteCloudWorks() throws ParameterIsNotJsonStringException {
         cloudUtils.clearTheCloud();
 
-        list2 = cloudUtils.parseJSONString(cloudUtils.retrieveCloud());
+        list2 = cloudUtils.parseCloudJSONString(cloudUtils.retrieveCloud());
 
-        assertEquals("Cloud is emptyYou big dummy0000-00-00T00:00:00.0000", list2.get(0).getUniqueItemID());
+        assertEquals("Cloud is emptyYou big dummy{year='0', month='0', day='0'}", list2.get(0).getUniqueItemID());
 
+    }
+
+    @Test
+    void deleteSpecificCloudEntries(){
+        cloudUtils.deleteCloudEntriesSpecific(7,8);
     }
 
 }

@@ -1,48 +1,50 @@
 package domain;
 
-import exceptions.ParameterIsEmptyException;
 import utils.CloudUtils;
+import utils.DatabaseUtils;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 
 public class User {
 
     public String name;
-    private List<ToDoItem> userToDoList;
+    public List<ToDoItem> toDoList = new LinkedList<>();
     private StatisticsModel statisticsModel;
+    public CloudUtils cloudUtils;
+    public DatabaseUtils databaseUtils;
 
-    public User(String name) {
+    public User(String name) throws SQLException {
         this.name = name;
-    }
+        this.cloudUtils = new CloudUtils();
+        this.databaseUtils = new DatabaseUtils();
 
-    public List<ToDoItem> organizeItems(){
-        return null;
     }
 
     public void makeToDoItem(String about, String owner, String dueDate){
-        userToDoList.add(new ToDoItem(about, owner, dueDate));
+        toDoList.add(new ToDoItem(about, owner, new TimeStamp(dueDate)));
     }
 
-    public void viewToDoItems(){
-
+    public void makeToDoItem(ToDoItem item){
+        toDoList.add(item);
     }
 
-    public void editToDoItem(ToDoItem itemToEdit){
+    public ToDoItem getToDoItem(int itemID){ return toDoList.get(itemID); }
 
-    }
+    public List<ToDoItem> getToDoItemList(){return toDoList;}
 
-    public void removeToDoItem(ToDoItem itemToRemove){
-        userToDoList.remove(itemToRemove);
-    }
+    public void removeToDoItem(int itemID){ toDoList.remove(itemID); }
 
-    public boolean syncItemsToCloud(){
-        CloudUtils cloudUtils = new CloudUtils();
+    public String syncItemsToCloud(){
         try {
-            cloudUtils.uploadItemsToCloud(userToDoList);
+            return cloudUtils.uploadListToCloud(toDoList);
         } catch (IOException e){
             e.printStackTrace();
+            return "Failure";
         }
-        return cloudUtils.checkConnection();
     }
+
+
 }
