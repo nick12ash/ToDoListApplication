@@ -26,6 +26,9 @@ public class ToDoItem {
     @DatabaseField()
     public String status;
 
+    @DatabaseField(id = true)
+    public int id;
+
     public String currentTime = java.time.Clock.systemUTC().instant().toString();
 
     public ToDoItem(){
@@ -38,15 +41,17 @@ public class ToDoItem {
 
         this.createdDate = new TimeStamp(currentTime).toString();
         this.status = "In Progress";
+        this.id = 1;
     }
 
-    public ToDoItem(String about, String owner, TimeStamp dueDate, TimeStamp createdDate, String status, String category){
+    public ToDoItem(String about, String owner, TimeStamp dueDate, TimeStamp createdDate, String status, String category, int id){
         this.about = about;
         this.owner = owner;
         this.dueDate = dueDate.toString();
         this.createdDate = createdDate.toString();
         this.status = status;
         this.itemCategory = category;
+        this.id = id;
     }
 
     public String getUniqueItemID(){
@@ -68,6 +73,7 @@ public class ToDoItem {
     @Override
     public String toString() {
         return "ToDoItem{" +
+                "Id='" + id + '\'' +
                 "About='" + about + '\'' +
                 ", Owner='" + owner + '\'' +
                 ", Due Date='" + dueDate + '\'' +

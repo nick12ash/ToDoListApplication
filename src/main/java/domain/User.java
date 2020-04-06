@@ -18,7 +18,7 @@ public class User {
 
     public User(String name) throws SQLException {
         this.name = name;
-        this.cloudUtils = new CloudUtils();
+        this.cloudUtils = new CloudUtils(name);
         this.databaseUtils = new DatabaseUtils();
 
     }

@@ -17,9 +17,10 @@ public class CloudUtils {
 
     private HttpRequestFactory requestFactory;
     private String baseURL = "https://todoserver222.herokuapp.com/";
-    public String todosURL = baseURL + "todos/";
+    public String todosURL;
 
-    public CloudUtils() {
+    public CloudUtils(String name) {
+        todosURL = baseURL + name + "/todos/";
         requestFactory = new NetHttpTransport().createRequestFactory();
     }
 
@@ -86,10 +87,11 @@ public class CloudUtils {
                 var createdDateJson = rootObject.getAsJsonObject().getAsJsonPrimitive("created_date").getAsString();
                 var status = rootObject.getAsJsonObject().getAsJsonPrimitive("status").getAsString();
                 var category = rootObject.getAsJsonObject().getAsJsonPrimitive("category").getAsString();
-                list.add(new ToDoItem(about, owner, makeTSfromJsonString(dueDateJson), makeTSfromJsonString(createdDateJson), status, category));
+                var idNumber = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsInt();
+                list.add(new ToDoItem(about, owner, makeTSfromJsonString(dueDateJson), makeTSfromJsonString(createdDateJson), status, category, idNumber));
             }
         } else {
-            list.add(new ToDoItem("Cloud is empty", "You big dummy", new TimeStamp("0000-00-00T00:00:00.0000")));
+            list.add(new ToDoItem("Cloud is empty", "You", new TimeStamp("0000-00-00T00:00:00.0000")));
         }
         return list;
     }
@@ -111,7 +113,7 @@ public class CloudUtils {
     public void deleteTodoItem(int id) {
         try {
             HttpRequest deleteRequest = requestFactory.buildDeleteRequest(
-                    new GenericUrl(todosURL + id));
+                    new GenericUrl("https://todoserver222.herokuapp.com/todos/" + id));
             deleteRequest.execute();
         } catch (IOException e){
             e.printStackTrace();
