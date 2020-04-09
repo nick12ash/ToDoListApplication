@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c409087b-7ab1-49f5-bfd9-14f55ee90d99" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -83,7 +82,19 @@
       <option name="presentableId" value="Default" />
       <updated>1585587465258</updated>
     </task>
+    <task id="LOCAL-00001" summary="Attempted UI">
+      <created>1586460971075</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1586460971075</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Attempted UI" />
+    <option name="LAST_COMMIT_MESSAGE" value="Attempted UI" />
   </component>
   <component name="WindowStateProjectService">
     <state x="552" y="183" key="#Project_Structure" timestamp="1585587478296">
@@ -98,6 +109,10 @@
       <screen x="0" y="0" width="1280" height="800" />
     </state>
     <state x="490" y="296" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog/0.0.1280.800/1280.-280.1920.1080@0.0.1280.800" timestamp="1586288870612" />
+    <state x="214" y="2" key="CommitChangelistDialog2" timestamp="1586460969841">
+      <screen x="0" y="0" width="1280" height="800" />
+    </state>
+    <state x="214" y="2" key="CommitChangelistDialog2/0.0.1280.800/1280.-280.1920.1080@0.0.1280.800" timestamp="1586460969841" />
     <state width="1238" height="320" key="GridCell.Tab.0.bottom" timestamp="1586289387844">
       <screen x="0" y="0" width="1280" height="800" />
     </state>
@@ -114,6 +129,10 @@
       <screen x="0" y="0" width="1280" height="800" />
     </state>
     <state width="1238" height="320" key="GridCell.Tab.0.right/0.0.1280.800/1280.-258.1920.1058@0.0.1280.800" timestamp="1586289387843" />
+    <state x="240" y="140" key="Vcs.Push.Dialog.v2" timestamp="1586460978879">
+      <screen x="0" y="22" width="1280" height="699" />
+    </state>
+    <state x="240" y="140" key="Vcs.Push.Dialog.v2/0.22.1280.699/1280.-258.1920.1058@0.22.1280.699" timestamp="1586460978879" />
     <state x="437" y="266" key="com.intellij.ide.util.TipDialog" timestamp="1586288843441">
       <screen x="0" y="0" width="1280" height="800" />
     </state>
