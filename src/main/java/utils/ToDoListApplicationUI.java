@@ -57,9 +57,6 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
         panel.add(deleteToDoButton,deleteToDoButtonConstraints);
 
 
-
-
-
         ///Application Window
         setPreferredSize(new Dimension(800, 600));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
