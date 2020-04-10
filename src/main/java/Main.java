@@ -1,5 +1,3 @@
-package utils;
-
 import domain.TimeStamp;
 import domain.ToDoItem;
 import domain.User;
