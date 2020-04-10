@@ -19,8 +19,8 @@ public class CloudUtils {
     private String baseURL = "https://todoserver222.herokuapp.com/";
     public String todosURL;
 
-    public CloudUtils() {
-        todosURL = baseURL + "teamOne/todos/";
+    public CloudUtils(String name) {
+        todosURL = baseURL + name + "/todos/";
         requestFactory = new NetHttpTransport().createRequestFactory();
     }
 
