@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CloudUtilsTest {
 
-    CloudUtils cloudUtils = new CloudUtils("Klemm");
+    CloudUtils cloudUtils = new CloudUtils();
 
     ToDoItem todoItem1 = new ToDoItem("Reminder for grilled cheese", "Klemm", new TimeStamp("2020-04-04T18:35:23.669Z"));
     ToDoItem todoItem2 = new ToDoItem("Don't forget the pana cotta", "Klemm", new TimeStamp("2020-04-12T14:43:54.669Z"));
