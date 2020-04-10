@@ -3,6 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="c409087b-7ab1-49f5-bfd9-14f55ee90d99" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/domain/ToDoItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/domain/ToDoItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/utils/ToDoListApplicationUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ui/ToDoListApplicationUI.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,13 +41,31 @@
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
   </component>
-  <component name="RunManager">
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java/utils" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.ToDoListApplicationUI">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="utils.Main" />
       <module name="ToDoListApplication" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="utils.*" />
+          <option name="PATTERN" value="ui.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ToDoListApplicationUI" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="ui.ToDoListApplicationUI" />
+      <module name="ToDoListApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ui.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -55,6 +75,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.ToDoListApplicationUI" />
         <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>
@@ -89,7 +110,14 @@
       <option name="project" value="LOCAL" />
       <updated>1586460971075</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Attempted UI">
+      <created>1586461101591</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1586461101591</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -101,42 +129,70 @@
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state x="552" y="183" key="#Project_Structure/0.0.1920.1050@0.0.1920.1050" timestamp="1585587478296" />
-    <state x="1245" y="241" key="#com.intellij.ide.util.MemberChooser" timestamp="1585588322396">
-      <screen x="0" y="0" width="1920" height="1050" />
+    <state x="830" y="184" key="#com.intellij.ide.util.MemberChooser" timestamp="1586538304467">
+      <screen x="0" y="0" width="1280" height="800" />
     </state>
+    <state x="830" y="184" key="#com.intellij.ide.util.MemberChooser/0.0.1280.800/1280.-280.1920.1080@0.0.1280.800" timestamp="1586528562274" />
+    <state x="830" y="184" key="#com.intellij.ide.util.MemberChooser/0.0.1280.800@0.0.1280.800" timestamp="1586538304467" />
     <state x="1245" y="241" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1050@0.0.1920.1050" timestamp="1585588322396" />
     <state x="490" y="296" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog" timestamp="1586288870612">
       <screen x="0" y="0" width="1280" height="800" />
     </state>
     <state x="490" y="296" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog/0.0.1280.800/1280.-280.1920.1080@0.0.1280.800" timestamp="1586288870612" />
-    <state x="214" y="2" key="CommitChangelistDialog2" timestamp="1586460969841">
+    <state x="214" y="2" key="CommitChangelistDialog2" timestamp="1586461100559">
       <screen x="0" y="0" width="1280" height="800" />
     </state>
-    <state x="214" y="2" key="CommitChangelistDialog2/0.0.1280.800/1280.-280.1920.1080@0.0.1280.800" timestamp="1586460969841" />
-    <state width="1238" height="320" key="GridCell.Tab.0.bottom" timestamp="1586289387844">
+    <state x="214" y="2" key="CommitChangelistDialog2/0.0.1280.800/1280.-280.1920.1080@0.0.1280.800" timestamp="1586461100559" />
+    <state width="1238" height="136" key="GridCell.Tab.0.bottom" timestamp="1586546700840">
       <screen x="0" y="0" width="1280" height="800" />
     </state>
     <state width="1238" height="320" key="GridCell.Tab.0.bottom/0.0.1280.800/1280.-258.1920.1058@0.0.1280.800" timestamp="1586289387844" />
-    <state width="1238" height="320" key="GridCell.Tab.0.center" timestamp="1586289387842">
+    <state width="1238" height="136" key="GridCell.Tab.0.bottom/0.0.1280.800/1280.-280.1920.1080@0.0.1280.800" timestamp="1586546700840" />
+    <state width="1238" height="136" key="GridCell.Tab.0.bottom/0.0.1280.800@0.0.1280.800" timestamp="1586542121950" />
+    <state width="1238" height="136" key="GridCell.Tab.0.bottom/0.22.1280.693/1280.-258.1920.1058@0.22.1280.693" timestamp="1586530390884" />
+    <state width="1238" height="136" key="GridCell.Tab.0.bottom/0.22.1280.693@0.22.1280.693" timestamp="1586543427721" />
+    <state width="1238" height="320" key="GridCell.Tab.0.bottom/0.22.1280.695/1280.-258.1920.1058@0.22.1280.695" timestamp="1586520402495" />
+    <state width="1238" height="136" key="GridCell.Tab.0.center" timestamp="1586546700834">
       <screen x="0" y="0" width="1280" height="800" />
     </state>
     <state width="1238" height="320" key="GridCell.Tab.0.center/0.0.1280.800/1280.-258.1920.1058@0.0.1280.800" timestamp="1586289387842" />
-    <state width="1238" height="320" key="GridCell.Tab.0.left" timestamp="1586289387840">
+    <state width="1238" height="136" key="GridCell.Tab.0.center/0.0.1280.800/1280.-280.1920.1080@0.0.1280.800" timestamp="1586546700834" />
+    <state width="1238" height="136" key="GridCell.Tab.0.center/0.0.1280.800@0.0.1280.800" timestamp="1586542121948" />
+    <state width="1238" height="136" key="GridCell.Tab.0.center/0.22.1280.693/1280.-258.1920.1058@0.22.1280.693" timestamp="1586530390883" />
+    <state width="1238" height="136" key="GridCell.Tab.0.center/0.22.1280.693@0.22.1280.693" timestamp="1586543427719" />
+    <state width="1238" height="320" key="GridCell.Tab.0.center/0.22.1280.695/1280.-258.1920.1058@0.22.1280.695" timestamp="1586520402488" />
+    <state width="1238" height="136" key="GridCell.Tab.0.left" timestamp="1586546700830">
       <screen x="0" y="0" width="1280" height="800" />
     </state>
     <state width="1238" height="320" key="GridCell.Tab.0.left/0.0.1280.800/1280.-258.1920.1058@0.0.1280.800" timestamp="1586289387840" />
-    <state width="1238" height="320" key="GridCell.Tab.0.right" timestamp="1586289387843">
+    <state width="1238" height="136" key="GridCell.Tab.0.left/0.0.1280.800/1280.-280.1920.1080@0.0.1280.800" timestamp="1586546700830" />
+    <state width="1238" height="136" key="GridCell.Tab.0.left/0.0.1280.800@0.0.1280.800" timestamp="1586542121947" />
+    <state width="1238" height="136" key="GridCell.Tab.0.left/0.22.1280.693/1280.-258.1920.1058@0.22.1280.693" timestamp="1586530390881" />
+    <state width="1238" height="136" key="GridCell.Tab.0.left/0.22.1280.693@0.22.1280.693" timestamp="1586543427717" />
+    <state width="1238" height="320" key="GridCell.Tab.0.left/0.22.1280.695/1280.-258.1920.1058@0.22.1280.695" timestamp="1586520402480" />
+    <state width="1238" height="136" key="GridCell.Tab.0.right" timestamp="1586546700837">
       <screen x="0" y="0" width="1280" height="800" />
     </state>
     <state width="1238" height="320" key="GridCell.Tab.0.right/0.0.1280.800/1280.-258.1920.1058@0.0.1280.800" timestamp="1586289387843" />
-    <state x="240" y="140" key="Vcs.Push.Dialog.v2" timestamp="1586460978879">
-      <screen x="0" y="22" width="1280" height="699" />
+    <state width="1238" height="136" key="GridCell.Tab.0.right/0.0.1280.800/1280.-280.1920.1080@0.0.1280.800" timestamp="1586546700837" />
+    <state width="1238" height="136" key="GridCell.Tab.0.right/0.0.1280.800@0.0.1280.800" timestamp="1586542121949" />
+    <state width="1238" height="136" key="GridCell.Tab.0.right/0.22.1280.693/1280.-258.1920.1058@0.22.1280.693" timestamp="1586530390883" />
+    <state width="1238" height="136" key="GridCell.Tab.0.right/0.22.1280.693@0.22.1280.693" timestamp="1586543427720" />
+    <state width="1238" height="320" key="GridCell.Tab.0.right/0.22.1280.695/1280.-258.1920.1058@0.22.1280.695" timestamp="1586520402490" />
+    <state x="240" y="135" key="Vcs.Push.Dialog.v2" timestamp="1586461103947">
+      <screen x="0" y="0" width="1280" height="800" />
     </state>
+    <state x="240" y="135" key="Vcs.Push.Dialog.v2/0.0.1280.800/1280.-280.1920.1080@0.0.1280.800" timestamp="1586461103947" />
     <state x="240" y="140" key="Vcs.Push.Dialog.v2/0.22.1280.699/1280.-258.1920.1058@0.22.1280.699" timestamp="1586460978879" />
     <state x="437" y="266" key="com.intellij.ide.util.TipDialog" timestamp="1586288843441">
       <screen x="0" y="0" width="1280" height="800" />
     </state>
     <state x="437" y="266" key="com.intellij.ide.util.TipDialog/0.0.1280.800/1280.-280.1920.1080@0.0.1280.800" timestamp="1586288843441" />
     <state x="656" y="349" key="com.intellij.ide.util.TipDialog/0.0.1920.1050@0.0.1920.1050" timestamp="1585587469406" />
+    <state x="305" y="124" width="670" height="676" key="search.everywhere.popup" timestamp="1586539610047">
+      <screen x="0" y="0" width="1280" height="800" />
+    </state>
+    <state x="305" y="124" width="670" height="676" key="search.everywhere.popup/0.0.1280.800/1280.-280.1920.1080@0.0.1280.800" timestamp="1586536131378" />
+    <state x="305" y="124" width="670" height="676" key="search.everywhere.popup/0.0.1280.800@0.0.1280.800" timestamp="1586539610047" />
   </component>
 </project>
