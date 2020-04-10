@@ -19,8 +19,6 @@ public class Main {
             System.out.println("What is your name: ");
             String name = br.readLine();
             User user = new User(name);
-            CloudUtils cloudUtils = new CloudUtils();
-            DatabaseUtils databaseUtils = new DatabaseUtils();
             while (true) {
                 System.out.println("\nWhat would you like to access "+ name +"?\n[L]ocal utils?\n[C]loud utils?\n[D]atabase utils?\n[Q]uit utils?");
                 String action = br.readLine().toLowerCase();
@@ -113,16 +111,16 @@ public class Main {
                     System.out.println(name +"'s Cloud Utilities\n[S]ync local items to cloud\n[R]ead the cloud\n[C]lear the cloud (not reccommended)");
                     String action4 = br.readLine().toLowerCase();
                     if (action4.contentEquals("s")) { //Sync local items to cloud
-                        System.out.println(cloudUtils.uploadListToCloud(user.toDoList) + "\n");
+                        System.out.println(user.syncItemsToCloud() + "\n");
                     }
                     else if (action4.contentEquals("r")) { //Read the cloud
-                        List<ToDoItem> list = cloudUtils.readCloud();
+                        List<ToDoItem> list = user.cloudUtils.readCloud();
                         for (ToDoItem item : list) {
                             System.out.println(item);
                         }
                     }
                     else if (action4.contentEquals("c")){
-                        cloudUtils.clearTheCloud();
+                        user.cloudUtils.clearTheCloud();
                     }
                     else {
                         System.out.println("mmmmm try again big dawg");
@@ -134,19 +132,19 @@ public class Main {
                     System.out.println(name +"'s Database Utilities\n[S]ync cloud items to database\n[R]ead the database\n[C]lear the database");
                     String action5 = br.readLine().toLowerCase();
                     if (action5.contentEquals("s")) { //Sync from cloud to database
-                        List<ToDoItem> list = cloudUtils.readCloud();
+                        List<ToDoItem> list = user.cloudUtils.readCloud();
                         for (ToDoItem item : list) {
-                            System.out.println(databaseUtils.addItemToDatabase(item));
+                            System.out.println(user.databaseUtils.addItemToDatabase(item));
                         }
                     }
                     else if (action5.contentEquals("r")) { //Read database
-                        List<ToDoItem> list = databaseUtils.readDatabase();
+                        List<ToDoItem> list = user.databaseUtils.readDatabase();
                         for (ToDoItem item : list) {
                             System.out.println(item);
                         }
                     }
                     else if (action5.contentEquals("c")){
-                        databaseUtils.clearDatabase();
+                        user.databaseUtils.clearDatabase();
                     }
                     else {
                         System.out.println("mmmmmm try again big dawg");
