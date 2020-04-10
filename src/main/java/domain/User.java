@@ -1,10 +1,6 @@
 package domain;
 
-import utils.CloudUtils;
-import utils.DatabaseUtils;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,14 +9,9 @@ public class User {
     public String name;
     public List<ToDoItem> toDoList = new LinkedList<>();
     private StatisticsModel statisticsModel;
-    public CloudUtils cloudUtils;
-    public DatabaseUtils databaseUtils;
 
-    public User(String name) throws SQLException {
+    public User(String name){
         this.name = name;
-        this.cloudUtils = new CloudUtils(name);
-        this.databaseUtils = new DatabaseUtils();
-
     }
 
     public void makeToDoItem(String about, String owner, String dueDate){
@@ -36,15 +27,6 @@ public class User {
     public List<ToDoItem> getToDoItemList(){return toDoList;}
 
     public void removeToDoItem(int itemID){ toDoList.remove(itemID); }
-
-    public String syncItemsToCloud(){
-        try {
-            return cloudUtils.uploadListToCloud(toDoList);
-        } catch (IOException e){
-            e.printStackTrace();
-            return "Failure";
-        }
-    }
 
 
 }
