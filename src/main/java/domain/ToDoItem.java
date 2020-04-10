@@ -30,7 +30,6 @@ public class ToDoItem {
     public int id;
 
     public String currentTime = java.time.Clock.systemUTC().instant().toString();
-    public String toString;
 
     public ToDoItem(){
     }
