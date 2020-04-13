@@ -6,7 +6,11 @@ import domain.ToDoItem;
 import com.google.api.client.http.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import exceptions.ParameterIsNotJsonStringException;
+import org.javatuples.Pair;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.general.PieDataset;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -68,6 +72,22 @@ public class CloudUtils {
             e.printStackTrace();
             return "";
         }
+    }
+
+    //WIP
+    public PieDataset getPieData() throws Exception{
+        String rawData;
+        List<ToDoItem> toDoItems;
+        List<Pair<String, Integer>> pairs;
+        try {
+            rawData = retrieveCloud();
+            toDoItems = parseCloudJSONString(rawData);
+            pairs = UIUtils.convertListOfToDosToListOfPairs(toDoItems);
+        } catch (Exception | ParameterIsNotJsonStringException e) {
+            JOptionPane.showMessageDialog(null, "Couldn't get data!");
+            return new DefaultPieDataset();
+        }
+        return UIUtils.convertPairsToPieDataset(pairs);
     }
 
 

@@ -3,6 +3,15 @@ package UI;
 import domain.TimeStamp;
 import domain.ToDoItem;
 import domain.User;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PiePlot3D;
+import org.jfree.chart.util.Rotation;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.general.PieDataset;
+import utils.CloudUtils;
+
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableModel;
@@ -15,6 +24,7 @@ import java.util.List;
 public class ToDoListApplicationUI extends JFrame implements ActionListener{
 
     private JScrollPane JScrollPane;
+    private CloudUtils cloud;
 
     public ToDoListApplicationUI() throws SQLException {
         UIManager.put("Label.font", new FontUIResource(new Font("Arial", Font.PLAIN, 20)));
@@ -26,6 +36,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 "Enter your name",
                 JOptionPane.QUESTION_MESSAGE);
         User user = new User(userName);
+        cloud = new CloudUtils(userName);
 
         JPanel panel = new JPanel();
         GridBagLayout gridBagLayout = new GridBagLayout();
@@ -36,8 +47,6 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
         JLabel title = new JLabel("To Do Application");
         var titleLabelConstraints = new GridBagConstraints(0, 0, 4, 1, 1, 1, GridBagConstraints.NORTH, GridBagConstraints.CENTER, new Insets(20, 1, 20, 1), 0, 0);
         panel.add(title, titleLabelConstraints);
-
-
 
         ///Table of To-Do-Items
         ///TableData tableData = new TableData();
@@ -192,7 +201,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
             } else {
                 int selectedRow = toDoTable.getSelectedRow();
                 Object selectedToDoItem = tableData.getValueAt(selectedRow, 0);
-                List<ToDoItem> list = user.getToDoItemList();
+                List<ToDoItem> list = user.getToDoItemList(); //Shouldn't we check connection first, then try to get from cloud? If not, then do this?
                 for (ToDoItem item : list) {
                     if (selectedToDoItem == item.about) {
                         selectedToDoItem = item;
@@ -202,6 +211,41 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 }
                 tableData.removeRow(selectedRow);
                 tableData.fireTableStructureChanged();
+            }
+        });
+
+        //SHOW PIE CHART BUTTON
+        JButton showPieChartButton = new JButton("Show Pie Chart");
+        var showPieChartButtonConstraints = new GridBagConstraints(2, 4, 1, 1, 1, 1, GridBagConstraints.SOUTH, GridBagConstraints.CENTER, new Insets(20, 1, 20, 1), 0, 0);
+        panel.add(showPieChartButton,showPieChartButtonConstraints);
+        showPieChartButton.addActionListener(e -> {
+            if(toDoTable.size().equals(0)){
+                JOptionPane.showMessageDialog(panel, "There are no To-Do-Items to show data for. Try adding one first!");
+            }else{
+                JFreeChart chart = null;
+                try {
+                    chart = ChartFactory.createPieChart3D(
+                            "Data by Status",                  // chart title
+                            cloud.getPieData(),                // data
+                            true,                   // include legend
+                            true,
+                            false
+                    );
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panel, "Something went wrong with converting the data to create the pie chart.");
+                }
+                PiePlot3D plot = (PiePlot3D) chart.getPlot();
+                    plot.setStartAngle(290);
+                    plot.setDirection(Rotation.CLOCKWISE);
+                    plot.setForegroundAlpha(0.5f);
+                    ChartPanel chartPanel = new ChartPanel(chart);
+                    // default size
+                    chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+                    // add it to our application
+                    setContentPane(chartPanel);
+                    setDefaultCloseOperation(EXIT_ON_CLOSE);
+                    pack();
+                    setVisible(true);
             }
         });
 
