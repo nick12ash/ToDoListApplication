@@ -12,7 +12,6 @@ public class User {
 
     public String name;
     public List<ToDoItem> toDoList = new LinkedList<>();
-    private StatisticsModel statisticsModel;
     public CloudUtils cloudUtils;
     public DatabaseUtils databaseUtils;
 

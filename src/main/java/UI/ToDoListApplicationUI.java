@@ -94,7 +94,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                     "To-Do-Item Confirmation", JOptionPane.YES_NO_OPTION);
             if (submit == 0) {
                 var newToDo = new ToDoItem(memo, user.name, new TimeStamp(dueDateYear, dueDateMonth, dueDateDay));
-                user.toDoList.add(newToDo);
+                user.makeToDoItem(newToDo);
                 tableData.addRow(new Object[]{newToDo.about, newToDo.itemCategory, newToDo.status, newToDo.dueDate});
                 tableData.fireTableStructureChanged();
                 JOptionPane.showMessageDialog(null, "You are one step closer to being productive");

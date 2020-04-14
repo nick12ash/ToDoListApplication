@@ -39,6 +39,25 @@ public class CloudUtils {
         }
     }
 
+    public String uploadItemToCloud(ToDoItem toDoItem){
+        Map<String, Object> data = new LinkedHashMap<>();
+        try {
+            data.put("memo", toDoItem.about);
+            data.put("owner", toDoItem.owner);
+            data.put("due_date", toDoItem.dueDate);
+            data.put("created_date", toDoItem.createdDate);
+            data.put("status", toDoItem.status);
+            data.put("category", toDoItem.itemCategory);
+            HttpContent content = new UrlEncodedContent(data);
+            HttpRequest postRequest = requestFactory.buildPostRequest(
+                    new GenericUrl(todosURL), content);
+            postRequest.execute();
+            return "Success";
+        } catch (NullPointerException | IOException e){
+            return "Failure";
+        }
+    }
+
     public String uploadListToCloud(List<ToDoItem> toDoItemList) throws IOException{
         Map<String, Object> data = new LinkedHashMap<>();
         try {
