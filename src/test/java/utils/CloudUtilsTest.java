@@ -84,4 +84,9 @@ class CloudUtilsTest {
         cloudUtils.deleteCloudEntriesSpecific(12,13);
     }
 
+
+    @Test
+    void getPieDataNormalTest() {
+        //Stuff here
+    }
 }
