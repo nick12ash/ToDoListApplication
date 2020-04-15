@@ -3,7 +3,6 @@ package domain;
 import utils.CloudUtils;
 import utils.DatabaseUtils;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,8 +29,6 @@ public class User {
         toDoList.add(item);
     }
 
-    public ToDoItem getToDoItem(int itemID){ return toDoList.get(itemID); }
-
     public List<ToDoItem> getToDoItemList(){return toDoList;}
 
     public String deleteToDoItem(String identifier){
@@ -42,17 +39,6 @@ public class User {
             }
         }
         return "Not in local storage";
-    }
-
-    public void removeToDoItem(int itemID){ toDoList.remove(itemID); }
-
-    public String syncItemsToCloud(){
-        try {
-            return cloudUtils.uploadListToCloud(toDoList);
-        } catch (IOException e){
-            e.printStackTrace();
-            return "Failure";
-        }
     }
 
 

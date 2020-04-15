@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -114,6 +115,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 int selectedRow = toDoTable.getSelectedRow();
                 ToDoItem selectedToDoItem = getSelectedToDoItemFromSource(selectedRow);
                 JOptionPane.showMessageDialog(panel,"To-Do-Item Details: \n" + selectedToDoItem.toString());
+                updateTableDataFromSources();
             }
         });
 
@@ -230,7 +232,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
         updateTableDataFromSources();
 
         ///Application Window
-        setPreferredSize(new Dimension(800, 600));
+        setPreferredSize(new Dimension(1000, 600));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         pack();
         setVisible(true);
@@ -242,6 +244,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
 
 
     private void updateTableDataFromSources() {
+        //TODO delta recognition when making list so same items arent added twice
         List<ToDoItem> list = new LinkedList<>();
         if(cloud.checkConnection()){
             list = cloud.readCloud();
@@ -261,20 +264,23 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
             }
         }
         else{
+            clearTable();
             for (ToDoItem item : list){
-                for (int i = 0; i < tableData.getRowCount(); i++){
-                    if (!item.id.equals(tableData.getValueAt(i,0))){
-                        tableData.addRow(new Object[]{item.id, item.about, item.itemCategory, item.status, item.dueDate});
-                    }
-                }
+                tableData.addRow(new Object[]{item.id, item.about, item.itemCategory, item.status, item.dueDate});
             }
         }
-
         tableData.fireTableStructureChanged();
     }
 
+    private void clearTable() {
+        int rows = tableData.getRowCount();
+        for (int i = 0; i< rows; i++){
+            tableData.removeRow(0);
+        }
+    }
+
     private String removeSelectedToDoItemFromSource(int selectedRow) {
-        String toDoItemID = Integer.toString((Integer)tableData.getValueAt(selectedRow,0));
+        String toDoItemID = (String)tableData.getValueAt(selectedRow,0);
         String cloudResponse = cloud.deleteSingleItem(toDoItemID);
         String localResponse = user.deleteToDoItem(toDoItemID);
         String databaseReponse = database.deleteSingleItem(toDoItemID);
@@ -283,7 +289,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
     }
 
     private ToDoItem getSelectedToDoItemFromSource(int selectedRow) {
-        String toDoItemID = Integer.toString((Integer)tableData.getValueAt(selectedRow,0));
+        String toDoItemID = (String)tableData.getValueAt(selectedRow,0);
         ToDoItem chosenToDo = null;
         if (cloud.checkConnection()){
             chosenToDo = getFromList(cloud.readCloud(), toDoItemID);
@@ -300,7 +306,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
     private ToDoItem getFromList(List<ToDoItem> list, String identifier) {
         ToDoItem itemToReturn = null;
         for (ToDoItem item : list) {
-            if (item.id.equals(Integer.parseInt(identifier))) {
+            if (item.id.equals(identifier)) {
                 itemToReturn = item;
             }
         }
