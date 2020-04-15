@@ -3,6 +3,8 @@
 Team Members:
 Jacob Bishop
 Luke Holliday
+Nick Ash
+Duncan Klemm
 
 User stories
 As a student, I need to keep up with many tasks and assignments for the different classes I am enrolled in. I need a consolidated list of all my to-dos for all my classes.
