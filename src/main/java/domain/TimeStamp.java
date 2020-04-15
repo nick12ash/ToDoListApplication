@@ -9,14 +9,26 @@ public class TimeStamp {
     private int minute;
     private int second;
 
-    public TimeStamp(int aYear, int aMonth, int aDay, int aHour, int aMinute, int aSecond){
-        this.year = aYear;
-        this.month = aMonth;
-        this.day = aDay;
-        this.hour = aHour;
-        this.minute = aMinute;
-        this.second = aSecond;
+
+    // Formatted TimeStamp looks like 2017-01-23T18:35:23.669Z
+    public TimeStamp(String formattedTimeStamp){
+        this.year = Integer.parseInt(formattedTimeStamp.substring(0,4));
+        this.month = Integer.parseInt(formattedTimeStamp.substring(5,7));
+        this.day = Integer.parseInt(formattedTimeStamp.substring(8,10));
+        this.hour = Integer.parseInt(formattedTimeStamp.substring(11,13));
+        this.minute = Integer.parseInt(formattedTimeStamp.substring(14,16));
+        this.second = Integer.parseInt(formattedTimeStamp.substring(17,19));
     }
+
+    public TimeStamp(int year, int month, int day){
+        this.year = year;
+        this.month = month;
+        this.day = day;
+        this.hour = 0;
+        this.minute = 0;
+        this.second = 0;
+    }
+
 
     public int getYear() {
         return year;
@@ -40,5 +52,14 @@ public class TimeStamp {
 
     public int getSecond() {
         return second;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "year='" + year + '\'' +
+                ", month='" + month + '\'' +
+                ", day='" + day + '\'' +
+                '}';
     }
 }
