@@ -27,7 +27,7 @@ public class ToDoItem {
     public String status;
 
     @DatabaseField(id = true)
-    public int id;
+    public String id;
 
     public String currentTime = java.time.Clock.systemUTC().instant().toString();
 
@@ -41,10 +41,10 @@ public class ToDoItem {
         this.createdDate = new TimeStamp(currentTime).toString();
         this.status = "Snoozed";
         this.itemCategory = "Unsorted";
-        this.id = -1;
+        this.id = "-1";
     }
 
-    public ToDoItem(String about, String owner, TimeStamp dueDate, TimeStamp createdDate, String status, String category, int id){
+    public ToDoItem(String about, String owner, TimeStamp dueDate, TimeStamp createdDate, String status, String category, String id){
         this.about = about;
         this.owner = owner;
         this.dueDate = dueDate.toString();

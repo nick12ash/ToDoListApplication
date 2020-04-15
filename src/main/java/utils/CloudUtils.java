@@ -48,7 +48,7 @@ public class CloudUtils {
             data.put("created_date", toDoItem.createdDate);
             data.put("status", toDoItem.status);
             data.put("category", toDoItem.itemCategory);
-            if (!(toDoItem.id == -1)){
+            if (!toDoItem.id.equals("-1")){
                 data.put("id", toDoItem.id);
             }
             HttpContent content = new UrlEncodedContent(data);
@@ -134,7 +134,7 @@ public class CloudUtils {
                 var createdDateJson = rootObject.getAsJsonObject().getAsJsonPrimitive("created_date").getAsString();
                 var status = rootObject.getAsJsonObject().getAsJsonPrimitive("status").getAsString();
                 var category = rootObject.getAsJsonObject().getAsJsonPrimitive("category").getAsString();
-                var idNumber = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsInt();
+                var idNumber = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsString();
                 list.add(new ToDoItem(about, owner, makeTSfromJsonString(dueDateJson), makeTSfromJsonString(createdDateJson), status, category, idNumber));
             }
         } else {
@@ -202,6 +202,10 @@ public class CloudUtils {
         for (int i = start; i < end; i++){
             deleteTodoItem(Integer.toString(i));
         }
+    }
+
+    public void deleteCloudEntriesSpecific(String id){
+            deleteTodoItem(id);
     }
 
     public int getNewToDoCloudID(ToDoItem newToDo) {
