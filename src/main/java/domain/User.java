@@ -36,7 +36,7 @@ public class User {
 
     public String deleteToDoItem(String identifier){
         for (ToDoItem item : toDoList){
-            if (item.id == Integer.parseInt(identifier)){
+            if (item.id.equals(identifier)){
                 toDoList.remove(item);
                 return "Local Delete: Success";
             }
