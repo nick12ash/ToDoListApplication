@@ -60,16 +60,6 @@ public class ToDoItem {
 
     public String getStatus(){return status; }
 
-    public void changeAbout(String newAbout){
-        this.about = newAbout;
-    }
-
-    public void changeDueDate(TimeStamp newDueDate){
-        this.dueDate = newDueDate.toString();
-    }
-
-    public void changeCategory(String newCategory) {this.itemCategory = newCategory;}
-
     @Override
     public String toString() {
         return "ToDoItem{" +
@@ -82,13 +72,4 @@ public class ToDoItem {
                 '}';
     }
 
-    public void setComplete() { this.status = "Complete"; }
-
-    public void setSnoozed(){
-        this.status = "Snoozed";
-    }
-
-    public void setInProgress(){
-        this.status = "In Progress";
-    }
 }

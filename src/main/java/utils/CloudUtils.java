@@ -107,6 +107,7 @@ public class CloudUtils {
         List<ToDoItem> toDoItems;
         List<Pair<String, Integer>> pairs;
         try {
+            //Jacob you can do a single line to create the pairs, =UIUtils.convertListOfToDosToListOfPairs(readCloud());
             rawData = retrieveCloud();
             toDoItems = parseCloudJSONString(rawData);
             pairs = UIUtils.convertListOfToDosToListOfPairs(toDoItems);
@@ -156,17 +157,6 @@ public class CloudUtils {
         return new TimeStamp(year, month, day);
     }
 
-
-    public void deleteTodoItem(String id) {
-        try {
-            HttpRequest deleteRequest = requestFactory.buildDeleteRequest(
-                    new GenericUrl(todosURL + id));
-            deleteRequest.execute();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
     private boolean thisIsNotAJSONString(String json){
         return json.charAt(0) == '{' && json.charAt(0) == '[';
     }
@@ -177,13 +167,23 @@ public class CloudUtils {
         JsonArray rootObjects = rootElement.getAsJsonArray();
         for (JsonElement rootObject : rootObjects){
             String idString = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsString();
-            int id = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsInt();
+            var id = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsString();
             if(idString.equals(identifier)){
-                deleteTodoItem(Integer.toString(id));
+                deleteTodoItem(id);
                 return "Cloud Delete: Success";
             }
         }
         return "Not in cloud";
+    }
+
+    public void deleteTodoItem(String id) {
+        try {
+            HttpRequest deleteRequest = requestFactory.buildDeleteRequest(
+                    new GenericUrl(todosURL + id));
+            deleteRequest.execute();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
 
@@ -208,17 +208,4 @@ public class CloudUtils {
             deleteTodoItem(id);
     }
 
-    public int getNewToDoCloudID(ToDoItem newToDo) {
-        JsonParser jsonParser = new JsonParser();
-        JsonElement rootElement = jsonParser.parse(retrieveCloud());
-        JsonArray rootObjects = rootElement.getAsJsonArray();
-        for (JsonElement rootObject : rootObjects) {
-            String memo = rootObject.getAsJsonObject().getAsJsonPrimitive("about").getAsString();
-            int id = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsInt();
-            if (memo.equals(newToDo.about)) {
-                return id;
-            }
-        }
-        return -1;
-    }
 }
