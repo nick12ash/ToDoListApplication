@@ -115,7 +115,7 @@ class CloudUtilsTest {
 
     @Test
     void deleteSpecificCloudEntries(){
-        cloudUtils.deleteCloudEntriesSpecific(12,13);
+        cloudUtils.deleteCloudEntriesSpecific("4absCHG");
     }
 
 

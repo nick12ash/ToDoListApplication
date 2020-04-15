@@ -96,9 +96,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
             if (submit == 0) {
                 var newToDo = new ToDoItem(memo, user.name, new TimeStamp(dueDateYear, dueDateMonth, dueDateDay));
                 JOptionPane.showMessageDialog(null, makeToDoItemInLocation(newToDo));
-                int id = cloud.getNewToDoCloudID(newToDo);
-                tableData.addRow(new Object[]{id, newToDo.about, newToDo.itemCategory, newToDo.status, newToDo.dueDate});
-                tableData.fireTableStructureChanged();
+                updateTableDataFromSources();
                 JOptionPane.showMessageDialog(null, "You are one step closer to being productive");
             } else {
                 JOptionPane.showMessageDialog(null, "That's unfortunate...");
@@ -134,20 +132,17 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                                 "Would you like to update the memo of the To-Do-Item",
                                 "Update To-Do-Item Memo",
                                 JOptionPane.QUESTION_MESSAGE, null, null, item.about);
-                tableData.setValueAt(memo, selectedRow, 1);
 
                 String category = (String) JOptionPane.showInputDialog(panel,
                                 "Would you like to update the category of the To-Do-Item",
                                 "Update To-Do-Item Category",
                                 JOptionPane.QUESTION_MESSAGE, null, null, item.itemCategory);
-                tableData.setValueAt(category, selectedRow, 2);
 
                 Object[] statuses = {"In-Progress", "Snoozed", "Completed"};
                 String status = (String)JOptionPane.showInputDialog(panel,
                                 "Would you like to update the status of the To-Do-Item.",
                                 "Update To-Do-Item Status",
                                 JOptionPane.PLAIN_MESSAGE, null, statuses, item.status);
-                tableData.setValueAt(status, selectedRow, 3);
                 //Still need to set status of the To-Do-Item via IF statement
 
                 int updateDeadline = JOptionPane.showConfirmDialog(panel,
@@ -170,7 +165,6 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                             "Update To-Do-Item Due Date Day",
                             JOptionPane.QUESTION_MESSAGE));
                     newDueDate = new TimeStamp(dueDateYear, dueDateMonth, dueDateDay);
-                    tableData.setValueAt(newDueDate.toString(), selectedRow, 4);
                 }
                 else  {
                     newDueDate = cloud.makeTSfromJsonString(item.dueDate);
@@ -179,7 +173,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 ToDoItem newToDoItem = new ToDoItem(memo, item.owner, newDueDate, cloud.makeTSfromJsonString(item.createdDate), status, category, item.id);
                 removeSelectedToDoItemFromSource(selectedRow);
                 makeToDoItemInLocation(newToDoItem);
-                tableData.fireTableStructureChanged();
+                updateTableDataFromSources();
             }
         });
         ///DELETE TO-DO-ITEM BUTTON
@@ -193,8 +187,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 int selectedRow = toDoTable.getSelectedRow();
                 String removeMessage = removeSelectedToDoItemFromSource(selectedRow);
                 JOptionPane.showMessageDialog(panel,removeMessage);
-                tableData.removeRow(selectedRow);
-                tableData.fireTableStructureChanged();
+                updateTableDataFromSources();
             }
         });
 
@@ -270,7 +263,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
         else{
             for (ToDoItem item : list){
                 for (int i = 0; i < tableData.getRowCount(); i++){
-                    if (!(item.id == (Integer)tableData.getValueAt(i,0))){
+                    if (!item.id.equals(tableData.getValueAt(i,0))){
                         tableData.addRow(new Object[]{item.id, item.about, item.itemCategory, item.status, item.dueDate});
                     }
                 }
@@ -307,7 +300,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
     private ToDoItem getFromList(List<ToDoItem> list, String identifier) {
         ToDoItem itemToReturn = null;
         for (ToDoItem item : list) {
-            if (item.id == Integer.parseInt(identifier)) {
+            if (item.id.equals(Integer.parseInt(identifier))) {
                 itemToReturn = item;
             }
         }
