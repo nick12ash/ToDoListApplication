@@ -5,12 +5,10 @@ import domain.TimeStamp;
 import domain.ToDoItem;
 import com.google.api.client.http.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import exceptions.ParameterIsEmptyException;
 import exceptions.ParameterIsNotJsonStringException;
 import org.javatuples.Pair;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
-
 import javax.swing.*;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -101,12 +99,12 @@ public class CloudUtils {
         }
     }
 
-    //WIP
     public PieDataset getPieData(){
         String rawData;
         List<ToDoItem> toDoItems;
         List<Pair<String, Integer>> pairs;
         try {
+            //Jacob you can do a single line to create the pairs, =UIUtils.convertListOfToDosToListOfPairs(readCloud());
             rawData = retrieveCloud();
             toDoItems = parseCloudJSONString(rawData);
             pairs = UIUtils.convertListOfToDosToListOfPairs(toDoItems);
@@ -115,6 +113,34 @@ public class CloudUtils {
             return new DefaultPieDataset();
         }
         return UIUtils.convertPairsToPieDataset(pairs);
+    }
+
+    //Returns number of to do items in format readable by UI popup message.
+    public String calculateTotalCategoriesAndTotalItems(){
+        List<ToDoItem> toDoItems = readCloud();
+        String result;
+        int total = 0;
+        int numCompleted = 0;
+        int numInProgress = 0;
+        int numSnoozed = 0;
+
+        for (ToDoItem item : toDoItems){
+            String status = item.getStatus().toLowerCase();
+            if (status.equals("completed")){
+                numCompleted+=1;
+            }else if(status.equals("in-progress")){
+                numInProgress+=1;
+            }else if(status.equals("snoozed")){
+                numSnoozed+=1;
+            }else{
+                total-=1; //this is to counteract the adding of the total since it isn't applicable to the chart.
+            }
+            total+=1;
+        }
+        //populating result array with correct numbers.
+
+        result = "Total: " + total + "\nCompleted: " + numCompleted + "\nIn Progress: " + numInProgress + "\nSnoozed: " + numSnoozed;
+        return result;
     }
 
 
@@ -156,17 +182,6 @@ public class CloudUtils {
         return new TimeStamp(year, month, day);
     }
 
-
-    public void deleteTodoItem(String id) {
-        try {
-            HttpRequest deleteRequest = requestFactory.buildDeleteRequest(
-                    new GenericUrl(todosURL + id));
-            deleteRequest.execute();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
     private boolean thisIsNotAJSONString(String json){
         return json.charAt(0) == '{' && json.charAt(0) == '[';
     }
@@ -177,15 +192,24 @@ public class CloudUtils {
         JsonArray rootObjects = rootElement.getAsJsonArray();
         for (JsonElement rootObject : rootObjects){
             String idString = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsString();
-            int id = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsInt();
+            var id = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsString();
             if(idString.equals(identifier)){
-                deleteTodoItem(Integer.toString(id));
+                deleteTodoItem(id);
                 return "Cloud Delete: Success";
             }
         }
         return "Not in cloud";
     }
 
+    public void deleteTodoItem(String id) {
+        try {
+            HttpRequest deleteRequest = requestFactory.buildDeleteRequest(
+                    new GenericUrl(todosURL + id));
+            deleteRequest.execute();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
 
     //Extremely destructive to anyone else using the cloud. Completely wipes every to-do item in our team name. Only use in extreme cases.
     public void clearTheCloud(){
@@ -208,17 +232,4 @@ public class CloudUtils {
             deleteTodoItem(id);
     }
 
-    public int getNewToDoCloudID(ToDoItem newToDo) {
-        JsonParser jsonParser = new JsonParser();
-        JsonElement rootElement = jsonParser.parse(retrieveCloud());
-        JsonArray rootObjects = rootElement.getAsJsonArray();
-        for (JsonElement rootObject : rootObjects) {
-            String memo = rootObject.getAsJsonObject().getAsJsonPrimitive("about").getAsString();
-            int id = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsInt();
-            if (memo.equals(newToDo.about)) {
-                return id;
-            }
-        }
-        return -1;
-    }
 }

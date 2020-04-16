@@ -5,7 +5,6 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import domain.ToDoItem;
-
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;

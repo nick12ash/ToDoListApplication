@@ -8,8 +8,10 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.chart.util.Rotation;
+import org.jfree.data.general.PieDataset;
 import utils.CloudUtils;
 import utils.DatabaseUtils;
+import utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
@@ -114,6 +116,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 int selectedRow = toDoTable.getSelectedRow();
                 ToDoItem selectedToDoItem = getSelectedToDoItemFromSource(selectedRow);
                 JOptionPane.showMessageDialog(panel,"To-Do-Item Details: \n" + selectedToDoItem.toString());
+                updateTableDataFromSources();
             }
         });
 
@@ -212,17 +215,24 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                     JOptionPane.showMessageDialog(panel, "Something went wrong with converting the data to create the pie chart.");
                 }
                 PiePlot3D plot = (PiePlot3D) chart.getPlot();
-                    plot.setStartAngle(290);
-                    plot.setDirection(Rotation.CLOCKWISE);
-                    plot.setForegroundAlpha(0.5f);
-                    ChartPanel chartPanel = new ChartPanel(chart);
-                    // default size
-                    chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
-                    // add it to our application
-                    setContentPane(chartPanel);
-                    setDefaultCloseOperation(EXIT_ON_CLOSE);
-                    pack();
-                    setVisible(true);
+                plot.setStartAngle(290);
+                plot.setDirection(Rotation.CLOCKWISE);
+                plot.setForegroundAlpha(0.5f);
+                ChartPanel chartPanel = new ChartPanel(chart);
+                // default size
+                chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+                // add it to our application
+                setContentPane(chartPanel);
+                setDefaultCloseOperation(EXIT_ON_CLOSE);
+                pack();
+                setVisible(true);
+                //Displays message containing details and numbers on chart.
+                Object[] options = {"OK"};
+                JOptionPane.showOptionDialog(null, cloud.calculateTotalCategoriesAndTotalItems() + "\nClick OK to go back."
+                        , "Pie Chart Details", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+                //Now that we're finished, we back to the main UI.
+                panel.setLayout(gridBagLayout);
+                setContentPane(panel);
             }
         });
 
@@ -230,7 +240,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
         updateTableDataFromSources();
 
         ///Application Window
-        setPreferredSize(new Dimension(800, 600));
+        setPreferredSize(new Dimension(1000, 600));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         pack();
         setVisible(true);
@@ -239,7 +249,6 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
     public static void main(String[] args) throws SQLException {
         new ToDoListApplicationUI();
     }
-
 
     private void updateTableDataFromSources() {
         List<ToDoItem> list = new LinkedList<>();
@@ -255,26 +264,40 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
         if (list == null){
             return;
         }
+        list = removeDuplicateToDoItems(list);
         if (tableData.getRowCount() == 0){
             for (ToDoItem item : list){
                 tableData.addRow(new Object[]{item.id, item.about, item.itemCategory, item.status, item.dueDate});
             }
         }
         else{
+            clearTable();
             for (ToDoItem item : list){
-                for (int i = 0; i < tableData.getRowCount(); i++){
-                    if (!item.id.equals(tableData.getValueAt(i,0))){
-                        tableData.addRow(new Object[]{item.id, item.about, item.itemCategory, item.status, item.dueDate});
-                    }
-                }
+                tableData.addRow(new Object[]{item.id, item.about, item.itemCategory, item.status, item.dueDate});
             }
         }
-
         tableData.fireTableStructureChanged();
     }
 
+    public List<ToDoItem> removeDuplicateToDoItems(List<ToDoItem> list) {
+        List<ToDoItem> noDuplicateList = new LinkedList<>();
+        for(ToDoItem potentialDuplicate : list){
+            if(!noDuplicateList.contains(potentialDuplicate)){
+                noDuplicateList.add(potentialDuplicate);
+            }
+        }
+        return noDuplicateList;
+    }
+
+    private void clearTable() {
+        int rows = tableData.getRowCount();
+        for (int i = 0; i< rows; i++){
+            tableData.removeRow(0);
+        }
+    }
+
     private String removeSelectedToDoItemFromSource(int selectedRow) {
-        String toDoItemID = Integer.toString((Integer)tableData.getValueAt(selectedRow,0));
+        String toDoItemID = (String)tableData.getValueAt(selectedRow,0);
         String cloudResponse = cloud.deleteSingleItem(toDoItemID);
         String localResponse = user.deleteToDoItem(toDoItemID);
         String databaseReponse = database.deleteSingleItem(toDoItemID);
@@ -283,7 +306,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
     }
 
     private ToDoItem getSelectedToDoItemFromSource(int selectedRow) {
-        String toDoItemID = Integer.toString((Integer)tableData.getValueAt(selectedRow,0));
+        String toDoItemID = (String)tableData.getValueAt(selectedRow,0);
         ToDoItem chosenToDo = null;
         if (cloud.checkConnection()){
             chosenToDo = getFromList(cloud.readCloud(), toDoItemID);
@@ -300,7 +323,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
     private ToDoItem getFromList(List<ToDoItem> list, String identifier) {
         ToDoItem itemToReturn = null;
         for (ToDoItem item : list) {
-            if (item.id.equals(Integer.parseInt(identifier))) {
+            if (item.id.equals(identifier)) {
                 itemToReturn = item;
             }
         }
