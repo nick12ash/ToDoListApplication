@@ -6,3 +6,4 @@ Google Hangouts on 8 April, 2020 from 12:43pm to 2:00pm. Everyone present.
 Google Hangouts on 9 April, 2020 from 3:30pm to 4:30pm. Everyone present.
 Google Hangouts on 14 April, 2020 from 3:30pm to 4:30pm. Everyone present.
 Google Hangouts on 15 April, 2020 from 1:00pm to 3:01pm. Everyone present.
+Google Hangours on 16 April, 2020 from 3:30 to 4:45pm. Everyone present.
