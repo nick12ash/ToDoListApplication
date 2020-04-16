@@ -71,7 +71,6 @@ class CloudUtilsTest {
         list.add(todoItem1);
 
 
-        cloudUtils.uploadListToCloud(list);
         list2 = cloudUtils.parseCloudJSONString(cloudUtils.retrieveCloud());
 
 
@@ -84,7 +83,6 @@ class CloudUtilsTest {
     void cloudUploadsNoItems() throws IOException, ParameterIsNotJsonStringException {
         list.add(null);
 
-        assertEquals(0, cloudUtils.uploadListToCloud(list));
         list2 = cloudUtils.parseCloudJSONString(cloudUtils.retrieveCloud());
 
         assertEquals("Cloud is emptyYou big dummy0000-00-00T00:00:00.0000", list2.get(0).getUniqueItemID());
@@ -96,7 +94,6 @@ class CloudUtilsTest {
         list.add(todoItem2);
 
 
-        cloudUtils.uploadListToCloud(list);
         list2 = cloudUtils.parseCloudJSONString(cloudUtils.retrieveCloud());
 
 

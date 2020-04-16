@@ -47,7 +47,7 @@ public class CloudUtils {
             data.put("status", toDoItem.status);
             data.put("category", toDoItem.itemCategory);
             if (!toDoItem.id.equals("-1")){
-                data.put("id", toDoItem.id);
+                data.put("id", Integer.parseInt(toDoItem.id));
             }
             HttpContent content = new UrlEncodedContent(data);
             HttpRequest postRequest = requestFactory.buildPostRequest(
@@ -56,27 +56,6 @@ public class CloudUtils {
             return "Success";
         } catch (NullPointerException | IOException e){
             return "Failure";
-        }
-    }
-
-    public String uploadListToCloud(List<ToDoItem> toDoItemList) throws IOException{
-        Map<String, Object> data = new LinkedHashMap<>();
-        try {
-            for (ToDoItem tdi : toDoItemList) {
-                data.put("about", tdi.about);
-                data.put("owner", tdi.owner);
-                data.put("due_date", tdi.dueDate);
-                data.put("created_date", tdi.createdDate);
-                data.put("status", tdi.status);
-                data.put("category", tdi.itemCategory);
-                HttpContent content = new UrlEncodedContent(data);
-                HttpRequest postRequest = requestFactory.buildPostRequest(
-                        new GenericUrl(todosURL), content);
-                postRequest.execute();
-            }
-            return "Success";
-        } catch (NullPointerException e){
-            return "Empty List";
         }
     }
 

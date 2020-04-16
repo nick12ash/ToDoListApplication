@@ -10,6 +10,7 @@ import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.chart.util.Rotation;
 import utils.CloudUtils;
 import utils.DatabaseUtils;
+import utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
@@ -27,6 +28,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
     private JScrollPane JScrollPane;
     private CloudUtils cloud = new CloudUtils();
     private DatabaseUtils database = new DatabaseUtils();
+    private UIUtils uiUtils = new UIUtils();
     private User user;
     private DefaultTableModel tableData;
 
@@ -96,8 +98,8 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                     "To-Do-Item Confirmation", JOptionPane.YES_NO_OPTION);
             if (submit == 0) {
                 var newToDo = new ToDoItem(memo, user.name, new TimeStamp(dueDateYear, dueDateMonth, dueDateDay));
-                JOptionPane.showMessageDialog(null, makeToDoItemInLocation(newToDo));
-                updateTableDataFromSources();
+                JOptionPane.showMessageDialog(null, uiUtils.makeToDoItemInLocation(user, newToDo));
+                uiUtils.updateTableDataFromSources(tableData, user);
                 JOptionPane.showMessageDialog(null, "You are one step closer to being productive");
             } else {
                 JOptionPane.showMessageDialog(null, "That's unfortunate...");
@@ -113,9 +115,9 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 JOptionPane.showMessageDialog(panel, "Select the To-Do-Item you would like to view in more detail.");
             } else {
                 int selectedRow = toDoTable.getSelectedRow();
-                ToDoItem selectedToDoItem = getSelectedToDoItemFromSource(selectedRow);
+                ToDoItem selectedToDoItem = uiUtils.getSelectedToDoItemFromSource(tableData, user, selectedRow);
                 JOptionPane.showMessageDialog(panel,"To-Do-Item Details: \n" + selectedToDoItem.toString());
-                updateTableDataFromSources();
+                uiUtils.updateTableDataFromSources(tableData, user);
             }
         });
 
@@ -129,7 +131,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
             }
             else {
                 int selectedRow = toDoTable.getSelectedRow();
-                ToDoItem item = getSelectedToDoItemFromSource(selectedRow);
+                ToDoItem item = uiUtils.getSelectedToDoItemFromSource(tableData, user, selectedRow);
                 String memo = (String) JOptionPane.showInputDialog(panel,
                                 "Would you like to update the memo of the To-Do-Item",
                                 "Update To-Do-Item Memo",
@@ -173,9 +175,9 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                     JOptionPane.showMessageDialog(panel,"Your " + item.about + " has been updated.");
                 }
                 ToDoItem newToDoItem = new ToDoItem(memo, item.owner, newDueDate, new TimeStamp(item.createdDate), status, category, item.id);
-                removeSelectedToDoItemFromSource(selectedRow);
-                makeToDoItemInLocation(newToDoItem);
-                updateTableDataFromSources();
+                uiUtils.removeSelectedToDoItemFromSource(tableData, user,selectedRow);
+                uiUtils.makeToDoItemInLocation(user, newToDoItem);
+                uiUtils.updateTableDataFromSources(tableData, user);
             }
         });
         ///DELETE TO-DO-ITEM BUTTON
@@ -187,19 +189,20 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 JOptionPane.showMessageDialog(panel, "Select the To-Do-Item you would like to delete.");
             } else {
                 int selectedRow = toDoTable.getSelectedRow();
-                String removeMessage = removeSelectedToDoItemFromSource(selectedRow);
+                String removeMessage = uiUtils.removeSelectedToDoItemFromSource(tableData, user, selectedRow);
                 JOptionPane.showMessageDialog(panel,removeMessage);
-                updateTableDataFromSources();
+                uiUtils.updateTableDataFromSources(tableData, user);
             }
         });
 
+        //SYNC BUTTON
         JButton syncButton = new JButton("Sync");
         var syncButtonConstrains = new GridBagConstraints(0,4,1,1,1,1,GridBagConstraints.SOUTH,GridBagConstraints.CENTER,new Insets(20,1,20,1),0,0);
         panel.add(syncButton,syncButtonConstrains);
         syncButton.addActionListener(e ->{
-            List<String> syncItemResponses = syncCloudAndLocalToDatabase(cloud,user,database);
+            List<String> syncItemResponses = uiUtils.syncCloudAndLocalToDatabase(user);
             JOptionPane.showMessageDialog(panel,syncItemResponses);
-            updateTableDataFromSources();
+            uiUtils.updateTableDataFromSources(tableData, user);
         });
 
         //SHOW PIE CHART BUTTON
@@ -245,7 +248,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
         });
 
         //Read data from cloud for table before window open
-        updateTableDataFromSources();
+        uiUtils.updateTableDataFromSources(tableData, user);
 
         ///Application Window
         setPreferredSize(new Dimension(1000, 600));
@@ -256,116 +259,6 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
 
     public static void main(String[] args) throws SQLException {
         new ToDoListApplicationUI();
-    }
-
-    private List<String> syncCloudAndLocalToDatabase(CloudUtils cloud, User user, DatabaseUtils database) {
-        List<ToDoItem> itemList = new LinkedList<>();
-        List<String> responseList = new LinkedList<>();
-        if(cloud.checkConnection()){
-            itemList = cloud.readCloud();
-        }
-        if(!user.getToDoItemList().isEmpty()){
-            itemList.addAll(user.getToDoItemList());
-        }
-        if (itemList == null){
-            responseList.add("No items to sync");
-            return responseList;
-        }
-        for (ToDoItem item : itemList){
-            responseList.add(database.addItemToDatabase(item));
-        }
-        return responseList;
-    }
-
-    private void updateTableDataFromSources() {
-        List<ToDoItem> list;
-        List<ToDoItem> cloudList = cloud.readCloud();
-        list = removeDuplicateToDoItems(cloudList,user.toDoList);
-        list = removeDuplicateToDoItems(list,database.readDatabase());
-        if (list == null){
-            return;
-        }
-        if (tableData.getRowCount() == 0){
-            for (ToDoItem item : list){
-                tableData.addRow(new Object[]{item.id, item.about, item.itemCategory, item.status, item.dueDate});
-            }
-        }
-        else{
-            clearTable();
-            for (ToDoItem item : list){
-                tableData.addRow(new Object[]{item.id, item.about, item.itemCategory, item.status, item.dueDate});
-            }
-        }
-        tableData.fireTableStructureChanged();
-    }
-
-    public List<ToDoItem> removeDuplicateToDoItems(List<ToDoItem> list1, List<ToDoItem> list2) {
-        ArrayList<ToDoItem> itemList = new ArrayList<>();
-        if(list1 == null || list2 == null){
-            if(list1 == null && list2 == null){ return null; }
-            if(list1 == null){ return list2; }
-            else{ return list1; }
-        }
-        itemList.addAll(list1);
-        itemList.addAll(list2);
-        ArrayList<ToDoItem> noDuplicateList = new ArrayList<>();
-        for (ToDoItem element : itemList){
-            if(!noDuplicateList.contains(element)){
-                noDuplicateList.add(element);
-            }
-        }
-        return noDuplicateList;
-    }
-
-    private void clearTable() {
-        int rows = tableData.getRowCount();
-        for (int i = 0; i< rows; i++){
-            tableData.removeRow(0);
-        }
-    }
-
-    private String removeSelectedToDoItemFromSource(int selectedRow) {
-        String toDoItemID = (String)tableData.getValueAt(selectedRow,0);
-        String cloudResponse = cloud.deleteSingleItem(toDoItemID);
-        String localResponse = user.deleteToDoItem(toDoItemID);
-        String databaseReponse = database.deleteSingleItem(toDoItemID);
-        return String.format("%s\n%s\n%s\n",cloudResponse, localResponse, databaseReponse);
-
-    }
-
-    private ToDoItem getSelectedToDoItemFromSource(int selectedRow) {
-        String toDoItemID = (String)tableData.getValueAt(selectedRow,0);
-        ToDoItem chosenToDo = null;
-        if (cloud.checkConnection()){
-            chosenToDo = getFromList(cloud.readCloud(), toDoItemID);
-        }
-        if (chosenToDo == null){
-            chosenToDo = getFromList(user.getToDoItemList(), toDoItemID);
-        }
-        if (chosenToDo == null){
-            chosenToDo = getFromList(database.readDatabase(), toDoItemID);
-        }
-        return chosenToDo;
-    }
-
-    private ToDoItem getFromList(List<ToDoItem> list, String identifier) {
-        ToDoItem itemToReturn = null;
-        for (ToDoItem item : list) {
-            if (item.id.equals(identifier)) {
-                itemToReturn = item;
-            }
-        }
-        return itemToReturn;
-    }
-
-    private String makeToDoItemInLocation(ToDoItem newToDo) {
-        if(cloud.checkConnection()){
-            cloud.uploadItemToCloud(newToDo);
-            return "Item saved to cloud";
-        } else {
-            user.addToDoItemtoList(newToDo);
-            return "Item saved to local";
-        }
     }
 
     @Override
