@@ -8,8 +8,10 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.chart.util.Rotation;
+import org.jfree.data.general.PieDataset;
 import utils.CloudUtils;
 import utils.DatabaseUtils;
+import utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
@@ -18,7 +20,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -214,17 +215,24 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                     JOptionPane.showMessageDialog(panel, "Something went wrong with converting the data to create the pie chart.");
                 }
                 PiePlot3D plot = (PiePlot3D) chart.getPlot();
-                    plot.setStartAngle(290);
-                    plot.setDirection(Rotation.CLOCKWISE);
-                    plot.setForegroundAlpha(0.5f);
-                    ChartPanel chartPanel = new ChartPanel(chart);
-                    // default size
-                    chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
-                    // add it to our application
-                    setContentPane(chartPanel);
-                    setDefaultCloseOperation(EXIT_ON_CLOSE);
-                    pack();
-                    setVisible(true);
+                plot.setStartAngle(290);
+                plot.setDirection(Rotation.CLOCKWISE);
+                plot.setForegroundAlpha(0.5f);
+                ChartPanel chartPanel = new ChartPanel(chart);
+                // default size
+                chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+                // add it to our application
+                setContentPane(chartPanel);
+                setDefaultCloseOperation(EXIT_ON_CLOSE);
+                pack();
+                setVisible(true);
+                //Displays message containing details and numbers on chart.
+                Object[] options = {"OK"};
+                JOptionPane.showOptionDialog(null, cloud.calculateTotalCategoriesAndTotalItems() + "\nClick OK to go back."
+                        , "Pie Chart Details", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+                //Now that we're finished, we back to the main UI.
+                panel.setLayout(gridBagLayout);
+                setContentPane(panel);
             }
         });
 
@@ -242,9 +250,8 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
         new ToDoListApplicationUI();
     }
 
-
     private void updateTableDataFromSources() {
-        //TODO delta recognition when making list so same items arent added twice
+        //TODO delta recognition when making list so same items aren't added twice
         List<ToDoItem> list = new LinkedList<>();
         if(cloud.checkConnection()){
             list = cloud.readCloud();

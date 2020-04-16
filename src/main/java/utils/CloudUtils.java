@@ -5,12 +5,10 @@ import domain.TimeStamp;
 import domain.ToDoItem;
 import com.google.api.client.http.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import exceptions.ParameterIsEmptyException;
 import exceptions.ParameterIsNotJsonStringException;
 import org.javatuples.Pair;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
-
 import javax.swing.*;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -101,7 +99,6 @@ public class CloudUtils {
         }
     }
 
-    //WIP
     public PieDataset getPieData(){
         String rawData;
         List<ToDoItem> toDoItems;
@@ -116,6 +113,34 @@ public class CloudUtils {
             return new DefaultPieDataset();
         }
         return UIUtils.convertPairsToPieDataset(pairs);
+    }
+
+    //Returns number of to do items in format readable by UI popup message.
+    public String calculateTotalCategoriesAndTotalItems(){
+        List<ToDoItem> toDoItems = readCloud();
+        String result;
+        int total = 0;
+        int numCompleted = 0;
+        int numInProgress = 0;
+        int numSnoozed = 0;
+
+        for (ToDoItem item : toDoItems){
+            String status = item.getStatus().toLowerCase();
+            if (status.equals("completed")){
+                numCompleted+=1;
+            }else if(status.equals("in-progress")){
+                numInProgress+=1;
+            }else if(status.equals("snoozed")){
+                numSnoozed+=1;
+            }else{
+                total-=1; //this is to counteract the adding of the total since it isn't applicable to the chart.
+            }
+            total+=1;
+        }
+        //populating result array with correct numbers.
+
+        result = "Total: " + total + "\nCompleted: " + numCompleted + "\nIn Progress: " + numInProgress + "\nSnoozed: " + numSnoozed;
+        return result;
     }
 
 
@@ -185,7 +210,6 @@ public class CloudUtils {
             e.printStackTrace();
         }
     }
-
 
     //Extremely destructive to anyone else using the cloud. Completely wipes every to-do item in our team name. Only use in extreme cases.
     public void clearTheCloud(){
