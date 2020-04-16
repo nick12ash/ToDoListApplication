@@ -130,54 +130,73 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 JOptionPane.showMessageDialog(panel, "Select the To-Do-Item you would like to edit.");
             }
             else {
-                int selectedRow = toDoTable.getSelectedRow();
-                ToDoItem item = uiUtils.getSelectedToDoItemFromSource(tableData, user, selectedRow);
-                String memo = (String) JOptionPane.showInputDialog(panel,
-                                "Would you like to update the memo of the To-Do-Item",
-                                "Update To-Do-Item Memo",
-                                JOptionPane.QUESTION_MESSAGE, null, null, item.about);
+                while (true) {
+                    int selectedRow = toDoTable.getSelectedRow();
+                    ToDoItem item = uiUtils.getSelectedToDoItemFromSource(tableData, user, selectedRow);
+                    String memo = (String) JOptionPane.showInputDialog(panel,
+                            "Would you like to update the memo of the To-Do-Item",
+                            "Update To-Do-Item Memo",
+                            JOptionPane.QUESTION_MESSAGE, null, null, item.about);
+                    if (memo == null) {
+                        break;
+                    }
 
-                String category = (String) JOptionPane.showInputDialog(panel,
-                                "Would you like to update the category of the To-Do-Item",
-                                "Update To-Do-Item Category",
-                                JOptionPane.QUESTION_MESSAGE, null, null, item.itemCategory);
+                    String category = (String) JOptionPane.showInputDialog(panel,
+                            "Would you like to update the category of the To-Do-Item",
+                            "Update To-Do-Item Category",
+                            JOptionPane.QUESTION_MESSAGE, null, null, item.itemCategory);
+                    if (category == null) {
+                        break;
+                    }
 
-                Object[] statuses = {"In-Progress", "Snoozed", "Completed"};
-                String status = (String)JOptionPane.showInputDialog(panel,
-                                "Would you like to update the status of the To-Do-Item.",
-                                "Update To-Do-Item Status",
-                                JOptionPane.PLAIN_MESSAGE, null, statuses, item.status);
-                //Still need to set status of the To-Do-Item via IF statement
+                    Object[] statuses = {"In-Progress", "Snoozed", "Completed"};
+                    String status = (String) JOptionPane.showInputDialog(panel,
+                            "Would you like to update the status of the To-Do-Item.",
+                            "Update To-Do-Item Status",
+                            JOptionPane.QUESTION_MESSAGE, null, statuses, item.status);
+                    if (category == null) {
+                        break;
+                    } else {
+                        if (status == "In-Progress") {
+                            item.status = "In-Progress";
+                        }
+                        if (status == "Snoozed") {
+                            item.status = "Snoozed";
+                        }
+                        if (status == "Completed") {
+                            item.status = "Completed";
+                        }
+                    }
 
-                int updateDeadline = JOptionPane.showConfirmDialog(panel,
-                                "Would you like to update the deadline of the To-Do-Item",
-                                "Update To-Do-Item Deadline",
-                                JOptionPane.YES_NO_OPTION);
+                    int updateDeadline = JOptionPane.showConfirmDialog(panel,
+                            "Would you like to update the deadline of the To-Do-Item",
+                            "Update To-Do-Item Deadline",
+                            JOptionPane.YES_NO_OPTION);
 
-                TimeStamp newDueDate;
-                if (updateDeadline == 0) {
-                    int dueDateYear = Integer.parseInt(JOptionPane.showInputDialog(panel,
-                            "What is the Due date year? ex: 2017",
-                            "Update To-Do-Item Due Date Year",
-                            JOptionPane.QUESTION_MESSAGE));
-                    int dueDateMonth = Integer.parseInt(JOptionPane.showInputDialog(panel,
-                            "What is the Due date month? ex: 05",
-                            "Update To-Do-Item Due Date Month",
-                            JOptionPane.QUESTION_MESSAGE));
-                    int dueDateDay = Integer.parseInt(JOptionPane.showInputDialog(panel,
-                            "What is the Due date day? ex: 14",
-                            "Update To-Do-Item Due Date Day",
-                            JOptionPane.QUESTION_MESSAGE));
-                    newDueDate = new TimeStamp(dueDateYear, dueDateMonth, dueDateDay);
+                    TimeStamp newDueDate;
+                    if (updateDeadline == 0) {
+                        int dueDateYear = Integer.parseInt(JOptionPane.showInputDialog(panel,
+                                "What is the Due date year? ex: 2017",
+                                "Update To-Do-Item Due Date Year",
+                                JOptionPane.QUESTION_MESSAGE));
+                        int dueDateMonth = Integer.parseInt(JOptionPane.showInputDialog(panel,
+                                "What is the Due date month? ex: 05",
+                                "Update To-Do-Item Due Date Month",
+                                JOptionPane.QUESTION_MESSAGE));
+                        int dueDateDay = Integer.parseInt(JOptionPane.showInputDialog(panel,
+                                "What is the Due date day? ex: 14",
+                                "Update To-Do-Item Due Date Day",
+                                JOptionPane.QUESTION_MESSAGE));
+                        newDueDate = new TimeStamp(dueDateYear, dueDateMonth, dueDateDay);
+                    } else {
+                        newDueDate = new TimeStamp(item.dueDate);
+                        JOptionPane.showMessageDialog(panel, "Your " + item.about + " has been updated.");
+                    }
+                    ToDoItem newToDoItem = new ToDoItem(memo, item.owner, newDueDate, new TimeStamp(item.createdDate), status, category, item.id);
+                    uiUtils.removeSelectedToDoItemFromSource(tableData, user, selectedRow);
+                    uiUtils.makeToDoItemInLocation(user, newToDoItem);
+                    uiUtils.updateTableDataFromSources(tableData, user);
                 }
-                else  {
-                    newDueDate = new TimeStamp(item.dueDate);
-                    JOptionPane.showMessageDialog(panel,"Your " + item.about + " has been updated.");
-                }
-                ToDoItem newToDoItem = new ToDoItem(memo, item.owner, newDueDate, new TimeStamp(item.createdDate), status, category, item.id);
-                uiUtils.removeSelectedToDoItemFromSource(tableData, user,selectedRow);
-                uiUtils.makeToDoItemInLocation(user, newToDoItem);
-                uiUtils.updateTableDataFromSources(tableData, user);
             }
         });
         ///DELETE TO-DO-ITEM BUTTON
