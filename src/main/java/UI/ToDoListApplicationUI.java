@@ -251,7 +251,6 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
     }
 
     private void updateTableDataFromSources() {
-        //TODO delta recognition when making list so same items aren't added twice
         List<ToDoItem> list = new LinkedList<>();
         if(cloud.checkConnection()){
             list = cloud.readCloud();
@@ -265,6 +264,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
         if (list == null){
             return;
         }
+        list = removeDuplicateToDoItems(list);
         if (tableData.getRowCount() == 0){
             for (ToDoItem item : list){
                 tableData.addRow(new Object[]{item.id, item.about, item.itemCategory, item.status, item.dueDate});
@@ -277,6 +277,16 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
             }
         }
         tableData.fireTableStructureChanged();
+    }
+
+    public List<ToDoItem> removeDuplicateToDoItems(List<ToDoItem> list) {
+        List<ToDoItem> noDuplicateList = new LinkedList<>();
+        for(ToDoItem potentialDuplicate : list){
+            if(!noDuplicateList.contains(potentialDuplicate)){
+                noDuplicateList.add(potentialDuplicate);
+            }
+        }
+        return noDuplicateList;
     }
 
     private void clearTable() {
