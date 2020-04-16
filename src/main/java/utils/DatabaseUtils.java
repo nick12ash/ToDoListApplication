@@ -4,8 +4,10 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import domain.TimeStamp;
 import domain.ToDoItem;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,8 +25,9 @@ public class DatabaseUtils {
 
 
     public String addItemToDatabase(ToDoItem item){
+        ToDoItem transferItem = new ToDoItem(item.about,item.owner,new TimeStamp(item.dueDate),new TimeStamp(item.createdDate),item.status,item.itemCategory,item.id);
         try{
-            todoDao.create(item);
+            todoDao.create(transferItem);
             return "Success";
         } catch (SQLException e){
             return "Item exists in database";

@@ -21,11 +21,7 @@ public class User {
 
     }
 
-    public void makeToDoItem(String about, String owner, String dueDate){
-        toDoList.add(new ToDoItem(about, owner, new TimeStamp(dueDate)));
-    }
-
-    public void makeToDoItem(ToDoItem item){
+    public void addToDoItemtoList(ToDoItem item){
         toDoList.add(item);
     }
 

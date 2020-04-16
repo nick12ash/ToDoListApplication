@@ -15,27 +15,42 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.sql.Time;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DatabaseUtilsTest {
 
     ConnectionSource testConnection;
-    Dao<ToDoItem, String> bookDao;
+    Dao<ToDoItem, String> toDoDao;
 
     @BeforeEach
     void setupDB() throws SQLException {
         testConnection = new JdbcConnectionSource("jdbc:sqlite:test.db");
         TableUtils.dropTable(testConnection, ToDoItem.class, true);
         TableUtils.createTableIfNotExists(testConnection, ToDoItem.class);
-        bookDao = DaoManager.createDao(testConnection, ToDoItem.class);
+        toDoDao = DaoManager.createDao(testConnection, ToDoItem.class);
     }
 
     @Test
-    void testCreate() throws SQLException {
-        bookDao.create(new ToDoItem("Reminder for crepes", "Klemm", new TimeStamp(12,07,23)));
-        assertEquals(1, bookDao.countOf());
+    void testCreate() {
+        try {
+            DatabaseUtils databaseUtils = new DatabaseUtils();
+            ToDoItem todoItem1 = new ToDoItem("Reminder for grilled cheese", "Klemm", new TimeStamp(2020,4,4));
+            String databaseRespone = databaseUtils.addItemToDatabase(todoItem1);
+            assertEquals("Success", databaseRespone);
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void clearDatabase(){
+        try{
+            DatabaseUtils databaseUtils = new DatabaseUtils();
+            databaseUtils.clearDatabase();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
     }
 
     @AfterEach

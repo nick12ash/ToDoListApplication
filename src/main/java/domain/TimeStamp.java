@@ -1,23 +1,26 @@
 package domain;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class TimeStamp {
 
     private int year;
     private int month;
     private int day;
     private int hour;
-    private int minute;
-    private int second;
 
 
-    // Formatted TimeStamp looks like 2017-01-23T18:35:23.669Z
-    public TimeStamp(String formattedTimeStamp){
-        this.year = Integer.parseInt(formattedTimeStamp.substring(0,4));
-        this.month = Integer.parseInt(formattedTimeStamp.substring(5,7));
-        this.day = Integer.parseInt(formattedTimeStamp.substring(8,10));
-        this.hour = Integer.parseInt(formattedTimeStamp.substring(11,13));
-        this.minute = Integer.parseInt(formattedTimeStamp.substring(14,16));
-        this.second = Integer.parseInt(formattedTimeStamp.substring(17,19));
+    // Formatted TimeStamp looks like TimeStamp{year='2020', month='12', day='14'}
+    public TimeStamp(String jsonString){
+        JsonParser jsonParser = new JsonParser();
+        JsonElement rootElement = jsonParser.parse(jsonString);
+        JsonObject rootObject = rootElement.getAsJsonObject();
+        this.year = rootObject.getAsJsonPrimitive("year").getAsInt();
+        this.month = rootObject.getAsJsonPrimitive("month").getAsInt();
+        this.day = rootObject.getAsJsonPrimitive("day").getAsInt();
+        this.hour = 0;
     }
 
     public TimeStamp(int year, int month, int day){
@@ -25,8 +28,6 @@ public class TimeStamp {
         this.month = month;
         this.day = day;
         this.hour = 0;
-        this.minute = 0;
-        this.second = 0;
     }
 
 
@@ -44,14 +45,6 @@ public class TimeStamp {
 
     public int getHour() {
         return hour;
-    }
-
-    public int getMinute() {
-        return minute;
-    }
-
-    public int getSecond() {
-        return second;
     }
 
     @Override

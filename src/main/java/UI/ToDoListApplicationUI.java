@@ -8,10 +8,8 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.chart.util.Rotation;
-import org.jfree.data.general.PieDataset;
 import utils.CloudUtils;
 import utils.DatabaseUtils;
-import utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
@@ -20,6 +18,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -170,10 +169,10 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                     newDueDate = new TimeStamp(dueDateYear, dueDateMonth, dueDateDay);
                 }
                 else  {
-                    newDueDate = cloud.makeTSfromJsonString(item.dueDate);
+                    newDueDate = new TimeStamp(item.dueDate);
                     JOptionPane.showMessageDialog(panel,"Your " + item.about + " has been updated.");
                 }
-                ToDoItem newToDoItem = new ToDoItem(memo, item.owner, newDueDate, cloud.makeTSfromJsonString(item.createdDate), status, category, item.id);
+                ToDoItem newToDoItem = new ToDoItem(memo, item.owner, newDueDate, new TimeStamp(item.createdDate), status, category, item.id);
                 removeSelectedToDoItemFromSource(selectedRow);
                 makeToDoItemInLocation(newToDoItem);
                 updateTableDataFromSources();
@@ -192,6 +191,15 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 JOptionPane.showMessageDialog(panel,removeMessage);
                 updateTableDataFromSources();
             }
+        });
+
+        JButton syncButton = new JButton("Sync");
+        var syncButtonConstrains = new GridBagConstraints(0,4,1,1,1,1,GridBagConstraints.SOUTH,GridBagConstraints.CENTER,new Insets(20,1,20,1),0,0);
+        panel.add(syncButton,syncButtonConstrains);
+        syncButton.addActionListener(e ->{
+            List<String> syncItemResponses = syncCloudAndLocalToDatabase(cloud,user,database);
+            JOptionPane.showMessageDialog(panel,syncItemResponses);
+            updateTableDataFromSources();
         });
 
         //SHOW PIE CHART BUTTON
@@ -250,21 +258,33 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
         new ToDoListApplicationUI();
     }
 
-    private void updateTableDataFromSources() {
-        List<ToDoItem> list = new LinkedList<>();
+    private List<String> syncCloudAndLocalToDatabase(CloudUtils cloud, User user, DatabaseUtils database) {
+        List<ToDoItem> itemList = new LinkedList<>();
+        List<String> responseList = new LinkedList<>();
         if(cloud.checkConnection()){
-            list = cloud.readCloud();
+            itemList = cloud.readCloud();
         }
         if(!user.getToDoItemList().isEmpty()){
-            list.addAll(user.getToDoItemList());
+            itemList.addAll(user.getToDoItemList());
         }
-        if(!database.readDatabase().isEmpty()){
-            list.addAll(database.readDatabase());
+        if (itemList == null){
+            responseList.add("No items to sync");
+            return responseList;
         }
+        for (ToDoItem item : itemList){
+            responseList.add(database.addItemToDatabase(item));
+        }
+        return responseList;
+    }
+
+    private void updateTableDataFromSources() {
+        List<ToDoItem> list;
+        List<ToDoItem> cloudList = cloud.readCloud();
+        list = removeDuplicateToDoItems(cloudList,user.toDoList);
+        list = removeDuplicateToDoItems(list,database.readDatabase());
         if (list == null){
             return;
         }
-        list = removeDuplicateToDoItems(list);
         if (tableData.getRowCount() == 0){
             for (ToDoItem item : list){
                 tableData.addRow(new Object[]{item.id, item.about, item.itemCategory, item.status, item.dueDate});
@@ -279,11 +299,19 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
         tableData.fireTableStructureChanged();
     }
 
-    public List<ToDoItem> removeDuplicateToDoItems(List<ToDoItem> list) {
-        List<ToDoItem> noDuplicateList = new LinkedList<>();
-        for(ToDoItem potentialDuplicate : list){
-            if(!noDuplicateList.contains(potentialDuplicate)){
-                noDuplicateList.add(potentialDuplicate);
+    public List<ToDoItem> removeDuplicateToDoItems(List<ToDoItem> list1, List<ToDoItem> list2) {
+        ArrayList<ToDoItem> itemList = new ArrayList<>();
+        if(list1 == null || list2 == null){
+            if(list1 == null && list2 == null){ return null; }
+            if(list1 == null){ return list2; }
+            else{ return list1; }
+        }
+        itemList.addAll(list1);
+        itemList.addAll(list2);
+        ArrayList<ToDoItem> noDuplicateList = new ArrayList<>();
+        for (ToDoItem element : itemList){
+            if(!noDuplicateList.contains(element)){
+                noDuplicateList.add(element);
             }
         }
         return noDuplicateList;
@@ -335,7 +363,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
             cloud.uploadItemToCloud(newToDo);
             return "Item saved to cloud";
         } else {
-            user.makeToDoItem(newToDo);
+            user.addToDoItemtoList(newToDo);
             return "Item saved to local";
         }
     }

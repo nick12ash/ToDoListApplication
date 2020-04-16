@@ -8,6 +8,7 @@ import exceptions.ParameterIsNotJsonStringException;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,13 +24,17 @@ class CloudUtilsTest {
 
     String todosURL = "https://todoserver222.herokuapp.com/todos";
 
-    ToDoItem todoItem1 = new ToDoItem("Reminder for grilled cheese", "Klemm", new TimeStamp("2020-04-04T18:35:23.669Z"));
-    ToDoItem todoItem2 = new ToDoItem("Don't forget the pana cotta", "Klemm", new TimeStamp("2020-04-12T14:43:54.669Z"));
+    ToDoItem todoItem1 = new ToDoItem("Reminder for grilled cheese", "Klemm", new TimeStamp(2020,4,4));
+    ToDoItem todoItem2 = new ToDoItem("Don't forget the pana cotta", "Klemm", new TimeStamp(2020,4,12));
 
     List<ToDoItem> list = new LinkedList<>();
     List<ToDoItem> list2 = new LinkedList<>();
 
-    String currentTime = java.time.Clock.systemUTC().instant().toString();
+    private LocalDate dateNow = LocalDate.now();
+    private int dayNow = dateNow.getDayOfMonth();
+    private int monthNow = dateNow.getMonthValue();
+    private int yearNow = dateNow.getYear();
+    private TimeStamp currentTime = new TimeStamp(yearNow,monthNow,dayNow);
 
 
     @Test
@@ -42,8 +47,8 @@ class CloudUtilsTest {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("memo", "custom test item");
         data.put("owner", "teamone");
-        data.put("due_date", new TimeStamp(currentTime));
-        data.put("created_date", new TimeStamp(currentTime));
+        data.put("due_date", currentTime);
+        data.put("created_date", currentTime);
         data.put("status", "nonexistent");
         data.put("category", "Black Ops");
         data.put("id", 111);
