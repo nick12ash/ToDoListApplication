@@ -161,25 +161,12 @@ public class CloudUtils {
                 var status = rootObject.getAsJsonObject().getAsJsonPrimitive("status").getAsString();
                 var category = rootObject.getAsJsonObject().getAsJsonPrimitive("category").getAsString();
                 var idNumber = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsString();
-                list.add(new ToDoItem(about, owner, makeTSfromJsonString(dueDateJson), makeTSfromJsonString(createdDateJson), status, category, idNumber));
+                list.add(new ToDoItem(about, owner, new TimeStamp(dueDateJson), new TimeStamp(createdDateJson), status, category, idNumber));
             }
         } else {
             return null;
         }
         return list;
-    }
-
-    public TimeStamp makeTSfromJsonString(String jsonString){
-        if (thisIsNotAJSONString(jsonString)) {
-            return null;
-        }
-        JsonParser jsonParser = new JsonParser();
-        JsonElement rootElement = jsonParser.parse(jsonString);
-        JsonObject rootObject = rootElement.getAsJsonObject();
-        var year = rootObject.getAsJsonPrimitive("year").getAsInt();
-        var month = rootObject.getAsJsonPrimitive("month").getAsInt();
-        var day = rootObject.getAsJsonPrimitive("day").getAsInt();
-        return new TimeStamp(year, month, day);
     }
 
     private boolean thisIsNotAJSONString(String json){

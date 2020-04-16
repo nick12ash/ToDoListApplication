@@ -1,5 +1,6 @@
 package domain;
 
+import java.time.*;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -29,19 +30,13 @@ public class ToDoItem {
     @DatabaseField(id = true)
     public String id;
 
-    public String currentTime = java.time.Clock.systemUTC().instant().toString();
+    private LocalDate dateNow = LocalDate.now();
+    private int dayNow = dateNow.getDayOfMonth();
+    private int monthNow = dateNow.getMonthValue();
+    private int yearNow = dateNow.getYear();
+
 
     public ToDoItem(){
-    }
-
-    public ToDoItem(String about, String owner, TimeStamp dueDate){
-        this.about = about;
-        this.owner = owner;
-        this.dueDate = dueDate.toString();
-        this.createdDate = new TimeStamp(currentTime).toString();
-        this.status = "Snoozed";
-        this.itemCategory = "Unsorted";
-        this.id = "-1";
     }
 
     public ToDoItem(String about, String owner, TimeStamp dueDate, TimeStamp createdDate, String status, String category, String id){
@@ -53,6 +48,18 @@ public class ToDoItem {
         this.itemCategory = category;
         this.id = id;
     }
+
+    public ToDoItem(String about, String owner, TimeStamp dueDate){
+        this.about = about;
+        this.owner = owner;
+        this.dueDate = dueDate.toString();
+        this.createdDate = new TimeStamp(yearNow,monthNow,dayNow).toString();
+        this.status = "Snoozed";
+        this.itemCategory = "Unsorted";
+        this.id = "-1";
+    }
+
+
 
     public String getUniqueItemID(){
         return about+owner+dueDate;
