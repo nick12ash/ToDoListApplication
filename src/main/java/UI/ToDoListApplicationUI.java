@@ -12,6 +12,7 @@ import utils.CloudUtils;
 import utils.DatabaseUtils;
 import utils.UIUtils;
 
+import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableModel;
@@ -33,7 +34,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
     private DefaultTableModel tableData;
 
     public ToDoListApplicationUI() throws SQLException {
-        UIManager.put("Label.font", new FontUIResource(new Font("Arial", Font.PLAIN, 20)));
+        UIManager.put("Label.font", new FontUIResource(new Font("Arial", Font.BOLD, 20)));
         UIManager.put("Button.font", new FontUIResource(new Font("Dialog", Font.PLAIN, 20)));
 
         // Gets User of To-Do-Application
@@ -73,36 +74,50 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
         var makeToDoButtonConstraints = new GridBagConstraints(0, 3, 1, 1, 1, 1, GridBagConstraints.SOUTH, GridBagConstraints.CENTER, new Insets(20, 1, 20, 1), 0, 0);
         panel.add(makeToDoButton,makeToDoButtonConstraints);
         makeToDoButton.addActionListener(e -> {
-            String memo = JOptionPane.showInputDialog(panel,
-                    "What is the memo of the To-Do-Item",
-                    "New To-Do-Item",
-                    JOptionPane.QUESTION_MESSAGE);
+            while (true) {
+                String memo = JOptionPane.showInputDialog(panel,
+                        "What is the memo of the To-Do-Item",
+                        "New To-Do-Item",
+                        JOptionPane.QUESTION_MESSAGE);
+                if (memo == null) {
+                    break;
+                }
 
-            int dueDateYear = Integer.parseInt(JOptionPane.showInputDialog(panel,
-                    "What is the Due date year? ex: 2017",
-                    "New To-Do-Item Due Date Year",
-                    JOptionPane.QUESTION_MESSAGE));
+                String dueDateYear = JOptionPane.showInputDialog(panel,
+                        "What is the Due date year? ex: 2017",
+                        "New To-Do-Item Due Date Year",
+                        JOptionPane.QUESTION_MESSAGE);
+                if (dueDateYear == null) {
+                    break;
+                }
 
-            int dueDateMonth = Integer.parseInt(JOptionPane.showInputDialog(panel,
-                    "What is the Due date month? ex: 05",
-                    "New To-Do-Item Due Date Month",
-                    JOptionPane.QUESTION_MESSAGE));
+                String dueDateMonth = JOptionPane.showInputDialog(panel,
+                        "What is the Due date month? ex: 05",
+                        "New To-Do-Item Due Date Month",
+                        JOptionPane.QUESTION_MESSAGE);
+                if (dueDateMonth == null) {
+                    break;
+                }
 
-            int dueDateDay = Integer.parseInt(JOptionPane.showInputDialog(panel,
-                    "What is the Due date day? ex: 14",
-                    "New To-Do-Item Due Date Day",
-                    JOptionPane.QUESTION_MESSAGE));
+                String dueDateDay = JOptionPane.showInputDialog(panel,
+                        "What is the Due date day? ex: 14",
+                        "New To-Do-Item Due Date Day",
+                        JOptionPane.QUESTION_MESSAGE);
+                if (dueDateDay == null) {
+                    break;
+                }
 
-            int submit = JOptionPane.showConfirmDialog(panel, "Is the info " +
-                            "in this To-Do-Item correct?\n"+ " [" + memo + " " +dueDateMonth + "/" + dueDateDay + "/" + dueDateYear + "]",
-                    "To-Do-Item Confirmation", JOptionPane.YES_NO_OPTION);
-            if (submit == 0) {
-                var newToDo = new ToDoItem(memo, user.name, new TimeStamp(dueDateYear, dueDateMonth, dueDateDay));
-                JOptionPane.showMessageDialog(null, uiUtils.makeToDoItemInLocation(user, newToDo));
-                uiUtils.updateTableDataFromSources(tableData, user);
-                JOptionPane.showMessageDialog(null, "You are one step closer to being productive");
-            } else {
-                JOptionPane.showMessageDialog(null, "That's unfortunate...");
+                int submit = JOptionPane.showConfirmDialog(panel, "Is the info " +
+                                "in this To-Do-Item correct?\n" + " [" + memo + " " + dueDateMonth + "/" + dueDateDay + "/" + dueDateYear + "]",
+                        "To-Do-Item Confirmation", JOptionPane.YES_NO_OPTION);
+                if (submit == 0) {
+                    var newToDo = new ToDoItem(memo, user.name, new TimeStamp(Integer.parseInt(dueDateYear), Integer.parseInt(dueDateMonth), Integer.parseInt(dueDateDay)));
+                    JOptionPane.showMessageDialog(null, uiUtils.makeToDoItemInLocation(user, newToDo));
+                    uiUtils.updateTableDataFromSources(tableData, user);
+                    JOptionPane.showMessageDialog(null, "You are one step closer to being productive");
+                } else {
+                    JOptionPane.showMessageDialog(null, "That's unfortunate...");
+                }
             }
 
         });
@@ -190,7 +205,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                         newDueDate = new TimeStamp(dueDateYear, dueDateMonth, dueDateDay);
                     } else {
                         newDueDate = new TimeStamp(item.dueDate);
-                        JOptionPane.showMessageDialog(panel, "Your " + item.about + " has been updated.");
+                        JOptionPane.showMessageDialog(panel, "Your " + "[ " + item.about + " ]" + " To-Do-Item has been updated.");
                     }
                     ToDoItem newToDoItem = new ToDoItem(memo, item.owner, newDueDate, new TimeStamp(item.createdDate), status, category, item.id);
                     uiUtils.removeSelectedToDoItemFromSource(tableData, user, selectedRow);
@@ -266,8 +281,8 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
             }
         });
 
-        //Read data from cloud for table before window open
-        uiUtils.updateTableDataFromSources(tableData, user);
+        ///Read data from cloud for table before window open
+            uiUtils.updateTableDataFromSources(tableData, user);
 
         ///Application Window
         setPreferredSize(new Dimension(1000, 600));
