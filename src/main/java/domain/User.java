@@ -27,9 +27,9 @@ public class User {
 
     public List<ToDoItem> getToDoItemList(){return toDoList;}
 
-    public String deleteToDoItem(String identifier){
+    public String deleteToDoItem(int identifier){
         for (ToDoItem item : toDoList){
-            if (item.id.equals(identifier)){
+            if (item.id == identifier){
                 toDoList.remove(item);
                 return "Local Delete: Success";
             }

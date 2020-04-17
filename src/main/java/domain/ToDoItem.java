@@ -28,7 +28,7 @@ public class ToDoItem {
     public String status;
 
     @DatabaseField(id = true)
-    public String id;
+    public int id;
 
     private LocalDate dateNow = LocalDate.now();
     private int dayNow = dateNow.getDayOfMonth();
@@ -39,7 +39,7 @@ public class ToDoItem {
     public ToDoItem(){
     }
 
-    public ToDoItem(String about, String owner, TimeStamp dueDate, TimeStamp createdDate, String status, String category, String id){
+    public ToDoItem(String about, String owner, TimeStamp dueDate, TimeStamp createdDate, String status, String category, int id){
         this.about = about;
         this.owner = owner;
         this.dueDate = dueDate.toString();
@@ -56,14 +56,9 @@ public class ToDoItem {
         this.createdDate = new TimeStamp(yearNow,monthNow,dayNow).toString();
         this.status = "Snoozed";
         this.itemCategory = "Unsorted";
-        this.id = "-1";
+        this.id = -1;
     }
 
-
-
-    public String getUniqueItemID(){
-        return about+owner+dueDate;
-    }
 
     public String getStatus(){return status; }
 
@@ -77,6 +72,17 @@ public class ToDoItem {
                 ", Status='" + status + '\'' +
                 ", Category='" + itemCategory + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(o == null)                return false;
+        if(!(o instanceof ToDoItem)) return false;
+
+        ToDoItem other = (ToDoItem) o;
+        if(! (this.id ==other.id))      return false;
+
+        return true;
     }
 
 }
