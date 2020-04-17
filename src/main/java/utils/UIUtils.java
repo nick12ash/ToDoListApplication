@@ -132,15 +132,25 @@ public class UIUtils {
         int toDoItemID = (Integer)tableData.getValueAt(selectedRow,0);
         ToDoItem chosenToDo = null;
         if (cloudUtils.checkConnection()){
-            chosenToDo = cloudUtils.readCloud().get(toDoItemID);
+            chosenToDo = getFromList(cloudUtils.readCloud(), toDoItemID);
         }
         if (chosenToDo == null){
-            chosenToDo = user.getToDoItemList().get(toDoItemID);
+            chosenToDo = getFromList(user.getToDoItemList(), toDoItemID);
         }
         if (chosenToDo == null){
-            chosenToDo = databaseUtils.readDatabase().get(toDoItemID);
+            chosenToDo = getFromList(databaseUtils.readDatabase(), toDoItemID);
         }
         return chosenToDo;
+    }
+
+    private ToDoItem getFromList(List<ToDoItem> list, int identifier) {
+        ToDoItem itemToReturn = null;
+        for (ToDoItem item : list) {
+            if (item.id == identifier) {
+                itemToReturn = item;
+            }
+        }
+        return itemToReturn;
     }
 
 
