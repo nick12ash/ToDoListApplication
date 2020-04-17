@@ -95,7 +95,7 @@ public class UIUtils {
         tableData.fireTableStructureChanged();
     }
 
-    private List<ToDoItem> removeDuplicateToDoItems(List<ToDoItem> list1, List<ToDoItem> list2) {
+    public List<ToDoItem> removeDuplicateToDoItems(List<ToDoItem> list1, List<ToDoItem> list2) {
         ArrayList<ToDoItem> itemList = new ArrayList<>();
         if(list1 == null || list2 == null){
             if(list1 == null && list2 == null){ return null; }
@@ -132,26 +132,17 @@ public class UIUtils {
         int toDoItemID = (Integer)tableData.getValueAt(selectedRow,0);
         ToDoItem chosenToDo = null;
         if (cloudUtils.checkConnection()){
-            chosenToDo = getFromList(cloudUtils.readCloud(), toDoItemID);
+            chosenToDo = cloudUtils.readCloud().get(toDoItemID);
         }
         if (chosenToDo == null){
-            chosenToDo = getFromList(user.getToDoItemList(), toDoItemID);
+            chosenToDo = user.getToDoItemList().get(toDoItemID);
         }
         if (chosenToDo == null){
-            chosenToDo = getFromList(databaseUtils.readDatabase(), toDoItemID);
+            chosenToDo = databaseUtils.readDatabase().get(toDoItemID);
         }
         return chosenToDo;
     }
 
-    private ToDoItem getFromList(List<ToDoItem> list, int identifier) {
-        ToDoItem itemToReturn = null;
-        for (ToDoItem item : list) {
-            if (item.id == identifier) {
-                itemToReturn = item;
-            }
-        }
-        return itemToReturn;
-    }
 
     public String makeToDoItemInLocation(User user, ToDoItem newToDo) {
         if(cloudUtils.checkConnection()){

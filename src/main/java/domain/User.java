@@ -11,13 +11,9 @@ public class User {
 
     public String name;
     public List<ToDoItem> toDoList = new LinkedList<>();
-    public CloudUtils cloudUtils;
-    public DatabaseUtils databaseUtils;
 
-    public User(String name) throws SQLException {
+    public User(String name){
         this.name = name;
-        this.cloudUtils = new CloudUtils();
-        this.databaseUtils = new DatabaseUtils();
 
     }
 
