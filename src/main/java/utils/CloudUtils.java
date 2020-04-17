@@ -5,12 +5,15 @@ import domain.TimeStamp;
 import domain.ToDoItem;
 import com.google.api.client.http.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
+import domain.User;
 import exceptions.ParameterIsNotJsonStringException;
 import org.javatuples.Pair;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
 import javax.swing.*;
 import java.io.IOException;
+import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,7 +25,7 @@ public class CloudUtils {
     public String todosURL = "https://todoserver222.herokuapp.com/todos/";
     public String teamURL = "https://todoserver222.herokuapp.com/teamone/todos/";
 
-    public CloudUtils() {
+    public CloudUtils() throws SQLException {
         requestFactory = new NetHttpTransport().createRequestFactory();
     }
 
@@ -46,7 +49,7 @@ public class CloudUtils {
             data.put("created_date", toDoItem.createdDate);
             data.put("status", toDoItem.status);
             data.put("category", toDoItem.itemCategory);
-            if (!(toDoItem.id == -1)){
+            if (!(toDoItem.id == 0)){
                 data.put("id", toDoItem.id);
             }
             HttpContent content = new UrlEncodedContent(data);
@@ -63,7 +66,6 @@ public class CloudUtils {
         try {
             return parseCloudJSONString(retrieveCloud());
         } catch (ParameterIsNotJsonStringException e){
-            e.printStackTrace();
             return null;
         }
     }
@@ -73,21 +75,15 @@ public class CloudUtils {
             HttpRequest getRequest = requestFactory.buildGetRequest(new GenericUrl(teamURL));
             return getRequest.execute().parseAsString();
         } catch (IOException e){
-            e.printStackTrace();
-            return "";
+            return " ";
         }
     }
 
-    public PieDataset getPieData(){
-        String rawData;
-        List<ToDoItem> toDoItems;
+    public PieDataset getPieData(User user){
         List<Pair<String, Integer>> pairs;
         try {
-            //Jacob you can do a single line to create the pairs, =UIUtils.convertListOfToDosToListOfPairs(readCloud());
-            rawData = retrieveCloud();
-            toDoItems = parseCloudJSONString(rawData);
-            pairs = UIUtils.convertListOfToDosToListOfPairs(toDoItems);
-        } catch (Exception | ParameterIsNotJsonStringException e) {
+            pairs = UIUtils.convertListOfToDosToListOfPairs(UIUtils.getCombinedListFromSourceWithDuplicatesRemoved());
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Couldn't get data!");
             return new DefaultPieDataset();
         }
@@ -96,7 +92,7 @@ public class CloudUtils {
 
     //Returns number of to do items in format readable by UI popup message.
     public String calculateTotalCategoriesAndTotalItems(){
-        List<ToDoItem> toDoItems = readCloud();
+        List<ToDoItem> toDoItems = UIUtils.getCombinedListFromSourceWithDuplicatesRemoved();
         String result;
         int total = 0;
         int numCompleted = 0;
@@ -169,17 +165,23 @@ public class CloudUtils {
     }
 
     public String deleteSingleItem(int identifier){
-        JsonParser jsonParser = new JsonParser();
-        JsonElement rootElement = jsonParser.parse(retrieveCloud());
-        JsonArray rootObjects = rootElement.getAsJsonArray();
-        for (JsonElement rootObject : rootObjects){
-            var id = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsString();
-            if(id.contains(Integer.toString(identifier))){
-                deleteTodoItem(identifier);
-                return "Cloud Delete: Success";
+        try {
+            JsonParser jsonParser = new JsonParser();
+            JsonElement rootElement = jsonParser.parse(retrieveCloud());
+            JsonArray rootObjects = rootElement.getAsJsonArray();
+            for (JsonElement rootObject : rootObjects) {
+                var id = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsString();
+                if (id.contains(Integer.toString(identifier))) {
+                    deleteTodoItem(identifier);
+                    return "Cloud Delete: Success";
+                }
             }
+            return "Not in cloud";
         }
-        return "Not in cloud";
+        catch (IllegalStateException e){
+            return "Not connected to internet";
+        }
+
     }
 
     public void deleteTodoItem(int id) {

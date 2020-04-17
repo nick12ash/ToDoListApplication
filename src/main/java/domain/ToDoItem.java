@@ -56,7 +56,7 @@ public class ToDoItem {
         this.createdDate = new TimeStamp(yearNow,monthNow,dayNow).toString();
         this.status = "Snoozed";
         this.itemCategory = "Unsorted";
-        this.id = -1;
+        this.id = 0;
     }
 
 
@@ -85,4 +85,33 @@ public class ToDoItem {
         return true;
     }
 
+    public String formatDueDateNicely() {
+        TimeStamp timeStamp = new TimeStamp(this.dueDate);
+        return String.format("%s %-5s, %d",findMonthFromNumber(timeStamp.getMonth()),
+                                             timeStamp.getDay()+getSuffix(timeStamp.getDay()),
+                                             timeStamp.getYear());
+    }
+
+    private String findMonthFromNumber(int month) {
+        String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+        return months[month-1];
+    }
+
+    private String getSuffix(int number){
+        String[] numberSuffixes = {"th","st","nd","rd","th","th","th","th","th","th"};
+        if(number < 10){
+            return numberSuffixes[number];
+        }
+        else if(number < 20){
+            return "th";
+        }
+        else if(number < 30){
+            number = number - 20;
+            return numberSuffixes[number];
+        }
+        else {
+            number = number - 30;
+            return  numberSuffixes[number];
+        }
+    }
 }

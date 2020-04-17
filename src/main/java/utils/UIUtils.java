@@ -14,11 +14,14 @@ import java.util.List;
 
 public class UIUtils {
 
-    CloudUtils cloudUtils = new CloudUtils();
-    DatabaseUtils databaseUtils;
+    private static CloudUtils cloudUtils;
+    private static DatabaseUtils databaseUtils;
+    private static User user;
 
-    public UIUtils() throws SQLException {
+    public UIUtils(User user1) throws SQLException {
+        cloudUtils = new CloudUtils();
         databaseUtils = new DatabaseUtils();
+        user = user1;
     }
 
     public static PieDataset convertPairsToPieDataset(List<Pair<String, Integer>> pairs) {
@@ -54,7 +57,7 @@ public class UIUtils {
         return pairsResult;
     }
 
-    public List<String> syncCloudAndLocalToDatabase(User user) {
+    public List<String> syncCloudAndLocalToDatabase() {
         List<ToDoItem> itemList = new LinkedList<>();
         List<String> responseList = new LinkedList<>();
         if(cloudUtils.checkConnection()){
@@ -63,7 +66,7 @@ public class UIUtils {
         if(!user.getToDoItemList().isEmpty()){
             itemList.addAll(user.getToDoItemList());
         }
-        if (itemList == null){
+        if (itemList == null || itemList.size() == 0){
             responseList.add("No items to sync");
             return responseList;
         }
@@ -73,29 +76,32 @@ public class UIUtils {
         return responseList;
     }
 
-    public void updateTableDataFromSources(DefaultTableModel tableData, User user) {
-        List<ToDoItem> list;
-        List<ToDoItem> cloudList = cloudUtils.readCloud();
-        list = removeDuplicateToDoItems(cloudList,user.toDoList);
-        list = removeDuplicateToDoItems(list,databaseUtils.readDatabase());
+    public void updateTableDataFromSources(DefaultTableModel tableData) {
+        List<ToDoItem> list = getCombinedListFromSourceWithDuplicatesRemoved();
         if (list == null){
             return;
         }
         if (tableData.getRowCount() == 0){
             for (ToDoItem item : list){
-                tableData.addRow(new Object[]{item.id, item.about, item.itemCategory, item.status, item.dueDate});
+                tableData.addRow(new Object[]{item.id, item.about, item.itemCategory, item.status, item.formatDueDateNicely()});
             }
         }
         else{
             clearTable(tableData);
             for (ToDoItem item : list){
-                tableData.addRow(new Object[]{item.id, item.about, item.itemCategory, item.status, item.dueDate});
+                tableData.addRow(new Object[]{item.id, item.about, item.itemCategory, item.status, item.formatDueDateNicely()});
             }
         }
         tableData.fireTableStructureChanged();
     }
 
-    public List<ToDoItem> removeDuplicateToDoItems(List<ToDoItem> list1, List<ToDoItem> list2) {
+    public static List<ToDoItem> getCombinedListFromSourceWithDuplicatesRemoved() {
+        List<ToDoItem> cloudList = cloudUtils.readCloud();
+        List<ToDoItem> list = removeDuplicateToDoItems(cloudList,user.toDoList);
+        return removeDuplicateToDoItems(list,databaseUtils.readDatabase());
+    }
+
+    public static List<ToDoItem> removeDuplicateToDoItems(List<ToDoItem> list1, List<ToDoItem> list2) {
         ArrayList<ToDoItem> itemList = new ArrayList<>();
         if(list1 == null || list2 == null){
             if(list1 == null && list2 == null){ return null; }
@@ -120,7 +126,7 @@ public class UIUtils {
         }
     }
 
-    public String removeSelectedToDoItemFromSource(DefaultTableModel tableData, User user, int selectedRow) {
+    public String removeSelectedToDoItemFromSource(DefaultTableModel tableData, int selectedRow) {
         int toDoItemID = (Integer) tableData.getValueAt(selectedRow,0);
         String cloudResponse = cloudUtils.deleteSingleItem(toDoItemID);
         String localResponse = user.deleteToDoItem(toDoItemID);
@@ -128,8 +134,8 @@ public class UIUtils {
         return String.format("%s\n%s\n%s\n",cloudResponse, localResponse, databaseReponse);
     }
 
-    public ToDoItem getSelectedToDoItemFromSource(DefaultTableModel tableData, User user, int selectedRow) {
-        int toDoItemID = (Integer)tableData.getValueAt(selectedRow,0);
+    public ToDoItem getSelectedToDoItemFromSource(DefaultTableModel tableData, int selectedRow) {
+        int toDoItemID = (Integer)tableData. getValueAt(selectedRow,0);
         ToDoItem chosenToDo = null;
         if (cloudUtils.checkConnection()){
             chosenToDo = getFromList(cloudUtils.readCloud(), toDoItemID);
@@ -154,7 +160,7 @@ public class UIUtils {
     }
 
 
-    public String makeToDoItemInLocation(User user, ToDoItem newToDo) {
+    public String makeToDoItemInLocation(ToDoItem newToDo) {
         if(cloudUtils.checkConnection()){
             cloudUtils.uploadItemToCloud(newToDo);
             return "Item saved to cloud";
@@ -164,4 +170,24 @@ public class UIUtils {
         }
     }
 
+
+    public Reminder getMostUrgentReminder() {
+        List<ToDoItem> list = getCombinedListFromSourceWithDuplicatesRemoved();
+        List<Reminder> reminderList = makeRemindersFromToDos(list);
+        Reminder mostUrgent = reminderList.get(0);
+        for (Reminder reminder : reminderList){
+            if(mostUrgent.timeLeft() > reminder.timeLeft()){
+                mostUrgent = reminder;
+            }
+        }
+        return mostUrgent;
+    }
+
+    private List<Reminder> makeRemindersFromToDos(List<ToDoItem> list) {
+        List<Reminder> reminders = new LinkedList<>();
+        for (ToDoItem item : list){
+            reminders.add(new Reminder(item));
+        }
+        return reminders;
+    }
 }

@@ -9,7 +9,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.chart.util.Rotation;
 import utils.CloudUtils;
-import utils.DatabaseUtils;
+import utils.Reminder;
 import utils.UIUtils;
 
 import javax.annotation.Nonnull;
@@ -20,16 +20,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class ToDoListApplicationUI extends JFrame implements ActionListener{
 
     private JScrollPane JScrollPane;
     private CloudUtils cloud = new CloudUtils();
-    private DatabaseUtils database = new DatabaseUtils();
-    private UIUtils uiUtils = new UIUtils();
+    private UIUtils uiUtils;
     private User user;
     private DefaultTableModel tableData;
 
@@ -43,6 +40,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 "Enter your name",
                 JOptionPane.QUESTION_MESSAGE);
         user = new User(userName);
+        uiUtils = new UIUtils(user);
 
         JPanel panel = new JPanel();
         GridBagLayout gridBagLayout = new GridBagLayout();
@@ -111,15 +109,14 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                                 "in this To-Do-Item correct?\n" + " [" + memo + " " + dueDateMonth + "/" + dueDateDay + "/" + dueDateYear + "]",
                         "To-Do-Item Confirmation", JOptionPane.YES_NO_OPTION);
                 if (submit == 0) {
-                    var newToDo = new ToDoItem(memo, user.name, new TimeStamp(Integer.parseInt(dueDateYear), Integer.parseInt(dueDateMonth), Integer.parseInt(dueDateDay)));
-                    JOptionPane.showMessageDialog(null, uiUtils.makeToDoItemInLocation(user, newToDo));
-                    uiUtils.updateTableDataFromSources(tableData, user);
+                    var newToDo = new ToDoItem(memo, user.name, new TimeStamp(dueDateYear, dueDateMonth, dueDateDay));
+                    JOptionPane.showMessageDialog(null, uiUtils.makeToDoItemInLocation(newToDo));
+                    uiUtils.updateTableDataFromSources(tableData);
                     JOptionPane.showMessageDialog(null, "You are one step closer to being productive");
                 } else {
                     JOptionPane.showMessageDialog(null, "That's unfortunate...");
                 }
             }
-
         });
         ///VIEW TO-DO-ITEM BUTTON
         JButton viewToDoButton = new JButton("View To-Do-Item");
@@ -130,9 +127,9 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 JOptionPane.showMessageDialog(panel, "Select the To-Do-Item you would like to view in more detail.");
             } else {
                 int selectedRow = toDoTable.getSelectedRow();
-                ToDoItem selectedToDoItem = uiUtils.getSelectedToDoItemFromSource(tableData, user, selectedRow);
+                ToDoItem selectedToDoItem = uiUtils.getSelectedToDoItemFromSource(tableData, selectedRow);
                 JOptionPane.showMessageDialog(panel,"To-Do-Item Details: \n" + selectedToDoItem.toString());
-                uiUtils.updateTableDataFromSources(tableData, user);
+                uiUtils.updateTableDataFromSources(tableData);
             }
         });
 
@@ -147,7 +144,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
             else {
                 while (true) {
                     int selectedRow = toDoTable.getSelectedRow();
-                    ToDoItem item = uiUtils.getSelectedToDoItemFromSource(tableData, user, selectedRow);
+                    ToDoItem item = uiUtils.getSelectedToDoItemFromSource(tableData, selectedRow);
                     String memo = (String) JOptionPane.showInputDialog(panel,
                             "Would you like to update the memo of the To-Do-Item",
                             "Update To-Do-Item Memo",
@@ -169,7 +166,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                             "Would you like to update the status of the To-Do-Item.",
                             "Update To-Do-Item Status",
                             JOptionPane.QUESTION_MESSAGE, null, statuses, item.status);
-                    if (category == null) {
+                    if (status == null) {
                         break;
                     } else {
                         if (status == "In-Progress") {
@@ -208,9 +205,9 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                         JOptionPane.showMessageDialog(panel, "Your " + "[ " + item.about + " ]" + " To-Do-Item has been updated.");
                     }
                     ToDoItem newToDoItem = new ToDoItem(memo, item.owner, newDueDate, new TimeStamp(item.createdDate), status, category, item.id);
-                    uiUtils.removeSelectedToDoItemFromSource(tableData, user, selectedRow);
-                    uiUtils.makeToDoItemInLocation(user, newToDoItem);
-                    uiUtils.updateTableDataFromSources(tableData, user);
+                    uiUtils.removeSelectedToDoItemFromSource(tableData, selectedRow);
+                    uiUtils.makeToDoItemInLocation(newToDoItem);
+                    uiUtils.updateTableDataFromSources(tableData);
                 }
             }
         });
@@ -223,9 +220,9 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 JOptionPane.showMessageDialog(panel, "Select the To-Do-Item you would like to delete.");
             } else {
                 int selectedRow = toDoTable.getSelectedRow();
-                String removeMessage = uiUtils.removeSelectedToDoItemFromSource(tableData, user, selectedRow);
+                String removeMessage = uiUtils.removeSelectedToDoItemFromSource(tableData, selectedRow);
                 JOptionPane.showMessageDialog(panel,removeMessage);
-                uiUtils.updateTableDataFromSources(tableData, user);
+                uiUtils.updateTableDataFromSources(tableData);
             }
         });
 
@@ -234,9 +231,18 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
         var syncButtonConstrains = new GridBagConstraints(0,4,1,1,1,1,GridBagConstraints.SOUTH,GridBagConstraints.CENTER,new Insets(20,1,20,1),0,0);
         panel.add(syncButton,syncButtonConstrains);
         syncButton.addActionListener(e ->{
-            List<String> syncItemResponses = uiUtils.syncCloudAndLocalToDatabase(user);
+            List<String> syncItemResponses = uiUtils.syncCloudAndLocalToDatabase();
             JOptionPane.showMessageDialog(panel,syncItemResponses);
-            uiUtils.updateTableDataFromSources(tableData, user);
+            uiUtils.updateTableDataFromSources(tableData);
+        });
+
+        //REMINDER BUTTON
+        JButton reminderButton = new JButton("Remind me!");
+        var reminderButtonConstrains = new GridBagConstraints(1,4,1,1,1,1,GridBagConstraints.SOUTH,GridBagConstraints.CENTER,new Insets(20,1,20,1),0,0);
+        panel.add(reminderButton,reminderButtonConstrains);
+        reminderButton.addActionListener(e ->{
+            Reminder mostUrgentReminder = uiUtils.getMostUrgentReminder();
+            JOptionPane.showMessageDialog(panel, mostUrgentReminder.getMessage());
         });
 
         //SHOW PIE CHART BUTTON
@@ -251,7 +257,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 try {
                     chart = ChartFactory.createPieChart3D(
                             "Data by Status",                  // chart title
-                            cloud.getPieData(),                // data
+                            cloud.getPieData(user),                // data
                             true,                   // include legend
                             true,
                             false
@@ -280,9 +286,10 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 setContentPane(panel);
             }
         });
+      
+        //Read data from cloud for table before window open
+        uiUtils.updateTableDataFromSources(tableData);
 
-        ///Read data from cloud for table before window open
-            uiUtils.updateTableDataFromSources(tableData, user);
 
         ///Application Window
         setPreferredSize(new Dimension(1000, 600));
