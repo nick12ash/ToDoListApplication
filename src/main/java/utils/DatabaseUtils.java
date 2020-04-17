@@ -44,7 +44,7 @@ public class DatabaseUtils {
         }
     }
 
-    public String deleteSingleItem(String identifier){
+    public String deleteSingleItem(int identifier){
         try {
             var customQuery = todoDao.queryBuilder().where().eq("id", identifier).prepare();
             var itemToDelete = todoDao.query(customQuery);

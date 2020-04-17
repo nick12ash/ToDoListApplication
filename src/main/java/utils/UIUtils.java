@@ -106,9 +106,7 @@ public class UIUtils {
         itemList.addAll(list2);
         ArrayList<ToDoItem> noDuplicateList = new ArrayList<>();
         for (ToDoItem element : itemList){
-            if(noDuplicateList.contains(element)){
-                //item is duplicate
-            } else{
+            if(!noDuplicateList.contains(element)){
                 noDuplicateList.add(element);
             }
         }
@@ -123,7 +121,7 @@ public class UIUtils {
     }
 
     public String removeSelectedToDoItemFromSource(DefaultTableModel tableData, User user, int selectedRow) {
-        String toDoItemID = (String)tableData.getValueAt(selectedRow,0);
+        int toDoItemID = (Integer) tableData.getValueAt(selectedRow,0);
         String cloudResponse = cloudUtils.deleteSingleItem(toDoItemID);
         String localResponse = user.deleteToDoItem(toDoItemID);
         String databaseReponse = databaseUtils.deleteSingleItem(toDoItemID);
@@ -131,7 +129,7 @@ public class UIUtils {
     }
 
     public ToDoItem getSelectedToDoItemFromSource(DefaultTableModel tableData, User user, int selectedRow) {
-        String toDoItemID = (String)tableData.getValueAt(selectedRow,0);
+        int toDoItemID = (Integer)tableData.getValueAt(selectedRow,0);
         ToDoItem chosenToDo = null;
         if (cloudUtils.checkConnection()){
             chosenToDo = getFromList(cloudUtils.readCloud(), toDoItemID);
@@ -145,10 +143,10 @@ public class UIUtils {
         return chosenToDo;
     }
 
-    private ToDoItem getFromList(List<ToDoItem> list, String identifier) {
+    private ToDoItem getFromList(List<ToDoItem> list, int identifier) {
         ToDoItem itemToReturn = null;
         for (ToDoItem item : list) {
-            if (item.id.equals(identifier)) {
+            if (item.id == identifier) {
                 itemToReturn = item;
             }
         }
