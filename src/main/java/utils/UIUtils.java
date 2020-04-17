@@ -135,7 +135,7 @@ public class UIUtils {
     }
 
     public ToDoItem getSelectedToDoItemFromSource(DefaultTableModel tableData, int selectedRow) {
-        int toDoItemID = (Integer)tableData. getValueAt(selectedRow,0);
+        int toDoItemID = (Integer) tableData.getValueAt(selectedRow,0);
         ToDoItem chosenToDo = null;
         if (cloudUtils.checkConnection()){
             chosenToDo = getFromList(cloudUtils.readCloud(), toDoItemID);

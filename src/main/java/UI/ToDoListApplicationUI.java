@@ -72,7 +72,8 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
         var makeToDoButtonConstraints = new GridBagConstraints(0, 3, 1, 1, 1, 1, GridBagConstraints.SOUTH, GridBagConstraints.CENTER, new Insets(20, 1, 20, 1), 0, 0);
         panel.add(makeToDoButton,makeToDoButtonConstraints);
         makeToDoButton.addActionListener(e -> {
-            while (true) {
+            boolean creating = true;
+            while (creating) {
                 String memo = JOptionPane.showInputDialog(panel,
                         "What is the memo of the To-Do-Item",
                         "New To-Do-Item",
@@ -109,13 +110,14 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                                 "in this To-Do-Item correct?\n" + " [" + memo + " " + dueDateMonth + "/" + dueDateDay + "/" + dueDateYear + "]",
                         "To-Do-Item Confirmation", JOptionPane.YES_NO_OPTION);
                 if (submit == 0) {
-                    var newToDo = new ToDoItem(memo, user.name, new TimeStamp(dueDateYear, dueDateMonth, dueDateDay));
+                    var newToDo = new ToDoItem(memo, user.name, new TimeStamp(Integer.parseInt(dueDateYear), Integer.parseInt(dueDateMonth), Integer.parseInt(dueDateDay)));
                     JOptionPane.showMessageDialog(null, uiUtils.makeToDoItemInLocation(newToDo));
                     uiUtils.updateTableDataFromSources(tableData);
                     JOptionPane.showMessageDialog(null, "You are one step closer to being productive");
                 } else {
                     JOptionPane.showMessageDialog(null, "That's unfortunate...");
                 }
+                creating = false;
             }
         });
         ///VIEW TO-DO-ITEM BUTTON
@@ -142,7 +144,8 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 JOptionPane.showMessageDialog(panel, "Select the To-Do-Item you would like to edit.");
             }
             else {
-                while (true) {
+                boolean editing = true;
+                while (editing) {
                     int selectedRow = toDoTable.getSelectedRow();
                     ToDoItem item = uiUtils.getSelectedToDoItemFromSource(tableData, selectedRow);
                     String memo = (String) JOptionPane.showInputDialog(panel,
@@ -208,6 +211,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                     uiUtils.removeSelectedToDoItemFromSource(tableData, selectedRow);
                     uiUtils.makeToDoItemInLocation(newToDoItem);
                     uiUtils.updateTableDataFromSources(tableData);
+                    editing = false;
                 }
             }
         });
