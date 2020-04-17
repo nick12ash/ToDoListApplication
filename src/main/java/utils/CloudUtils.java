@@ -148,7 +148,7 @@ public class CloudUtils {
         return list;
     }
 
-    public String getStringFieldFromObject(JsonElement rootObject,String fieldName){
+    private String getStringFieldFromObject(JsonElement rootObject,String fieldName){
         try{
             return rootObject.getAsJsonObject().getAsJsonPrimitive(fieldName).getAsString();
         } catch (NullPointerException e){
@@ -165,7 +165,7 @@ public class CloudUtils {
     }
 
     private boolean thisIsNotAJSONString(String json){
-        return json.charAt(0) == '{' && json.charAt(0) == '[';
+        return json.charAt(0) != '{' && json.charAt(0) != '[';
     }
 
     public String deleteSingleItem(int identifier){
@@ -203,11 +203,6 @@ public class CloudUtils {
         }
     }
 
-    public void deleteCloudEntriesSpecificRange(int start, int end){
-        for (int i = start; i < end; i++){
-            deleteTodoItem(i);
-        }
-    }
 
     public void deleteCloudEntrySpecific(String id){
         try {

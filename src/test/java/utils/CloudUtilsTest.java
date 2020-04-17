@@ -1,108 +1,119 @@
 package utils;
 
-import com.google.api.client.http.*;
-import com.google.api.client.http.javanet.NetHttpTransport;
 import domain.TimeStamp;
 import domain.ToDoItem;
 import exceptions.ParameterIsNotJsonStringException;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CloudUtilsTest {
 
+    private final LocalDate dateNow = LocalDate.now();
+    private final int dayNow = dateNow.getDayOfMonth();
+    private final int monthNow = dateNow.getMonthValue();
+    private final int yearNow = dateNow.getYear();
+    private final TimeStamp currentTime = new TimeStamp(yearNow,monthNow,dayNow);
+
     CloudUtils cloudUtils = new CloudUtils();
 
-    HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory();
+    ToDoItem todoItem1 = new ToDoItem("Reminder for grilled cheese", "teamone", new TimeStamp(2020,4,4), currentTime, "Snoozed", "Unsorted", 10);
+    ToDoItem todoItem2 = new ToDoItem("Don't forget the pana cotta", "teamone", new TimeStamp(2020,4,12));
 
-    String todosURL = "https://todoserver222.herokuapp.com/todos";
-
-    ToDoItem todoItem1 = new ToDoItem("Reminder for grilled cheese", "Klemm", new TimeStamp(2020,4,4));
-    ToDoItem todoItem2 = new ToDoItem("Don't forget the pana cotta", "Klemm", new TimeStamp(2020,4,12));
-
-    List<ToDoItem> list = new LinkedList<>();
     List<ToDoItem> list2 = new LinkedList<>();
 
-    private LocalDate dateNow = LocalDate.now();
-    private int dayNow = dateNow.getDayOfMonth();
-    private int monthNow = dateNow.getMonthValue();
-    private int yearNow = dateNow.getYear();
-    private TimeStamp currentTime = new TimeStamp(yearNow,monthNow,dayNow);
+
 
 
     @Test
-    void checkConnection(){
-        assertEquals(true, cloudUtils.checkConnection());
+    void connectedToInternet(){
+        assertTrue(cloudUtils.checkConnection());
     }
 
-    @Test
-    void canUploadCustomID() throws IOException {
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("memo", "custom test item");
-        data.put("owner", "teamone");
-        data.put("due_date", currentTime);
-        data.put("created_date", currentTime);
-        data.put("status", "nonexistent");
-        data.put("category", "Black Ops");
-        data.put("id", 111);
-        HttpContent content = new UrlEncodedContent(data);
-        HttpRequest postRequest = requestFactory.buildPostRequest(
-                new GenericUrl(todosURL), content);
-        //postRequest.execute().parseAsString();
-        //Kind of screws up the whole ID system on the cloud so tread lightly
-    }
 
     @Test
     void uploadItemWithoutID() {
-        cloudUtils.uploadItemToCloud(todoItem1);
-        cloudUtils.uploadItemToCloud(todoItem2);
+        String response;
+        List<ToDoItem> itemList;
+
+        response = cloudUtils.uploadItemToCloud(todoItem2);
+        itemList = cloudUtils.readCloud();
+
+        assertEquals("Success", response);
+        assertEquals( todoItem2, itemList.get(0));
+    }
+
+    @Test
+    void uploadItemWithID() {
+        String response;
+        List<ToDoItem> itemList;
+
+        response = cloudUtils.uploadItemToCloud(todoItem2);
+        itemList = cloudUtils.readCloud();
+
+        assertEquals("Success", response);
+        assertEquals(todoItem2.about, itemList.get(0).about);
+    }
+
+    @Test
+    void brokenToDoItemReturnsErrorWhenUploading(){
+        String response;
+
+        todoItem1.status = null;
+        response = cloudUtils.uploadItemToCloud(todoItem1);
+
+        assertEquals("Failure", response);
+
     }
 
 
     @Test
-    void cloudUploadsAndDownloadsOneItem() throws IOException, ParameterIsNotJsonStringException {
-        list.add(todoItem1);
+    void nullToDoItemReturnsErrorWhenUploading() {
+        String response;
 
+        response = cloudUtils.uploadItemToCloud(null);
 
-        list2 = cloudUtils.parseCloudJSONString(cloudUtils.retrieveCloud());
-
-
-        assertEquals(list.get(0).id, list2.get(0).id);
-
-        cloudUtils.deleteTodoItem(1);
+        assertEquals("Failure", response);
     }
 
     @Test
-    void cloudUploadsNoItems() throws IOException, ParameterIsNotJsonStringException {
-        list.add(null);
+    void cloudReturnsJsonString(){
+        String response = cloudUtils.retrieveCloud();
 
-        list2 = cloudUtils.parseCloudJSONString(cloudUtils.retrieveCloud());
-
-        assertEquals("Cloud is emptyYou big dummy0000-00-00T00:00:00.0000", list2.get(0).id);
+        assertEquals('[', response.charAt(0));
     }
 
     @Test
-    void cloudUploadsMultipleItems() throws IOException, ParameterIsNotJsonStringException {
-        list.add(todoItem1);
-        list.add(todoItem2);
+    void parseMethodThrowsExceptionForNotJson(){
+        try {
+            String json = "Todoitem 1: About: memo other stuff";
+            cloudUtils.parseCloudJSONString(json);
+        } catch (ParameterIsNotJsonStringException e){
+            assert true;
+        }
+    }
 
+    @Test
+    void parseMethodCreatesToDoItem() throws ParameterIsNotJsonStringException {
+        List<ToDoItem> list;
+        String jsonString = "[\n" +
+                "  {\n" +
+                "    \"about\": \"test for timestamps\",\n" +
+                "    \"owner\": \"teamone\",\n" +
+                "    \"due_date\": \"{year='2020', month='33', day='14'}\",\n" +
+                "    \"created_date\": \"{year='2020', month='4', day='17'}\",\n" +
+                "    \"status\": \"Snoozed\",\n" +
+                "    \"category\": \"Unsorted\",\n" +
+                "    \"id\": 4\n" +
+                "  }\n" +
+                "]";
 
-        list2 = cloudUtils.parseCloudJSONString(cloudUtils.retrieveCloud());
-
-
-        assertEquals(list.get(0).id, list2.get(0).id);
-        assertEquals(list.get(1).id, list2.get(1).id);
-
-
-        cloudUtils.deleteTodoItem(1);
-        cloudUtils.deleteTodoItem(2);
+        list = cloudUtils.parseCloudJSONString(jsonString);
+        assertEquals(4, list.get(0).id);
     }
 
     @Test
@@ -111,13 +122,13 @@ class CloudUtilsTest {
 
         list2 = cloudUtils.parseCloudJSONString(cloudUtils.retrieveCloud());
 
-        assertEquals(null, list2);
+        assertNull(list2);
 
     }
 
     @Test
     void deleteSpecificCloudEntries(){
-        cloudUtils.deleteCloudEntrySpecific("x5JLO7s");
+        cloudUtils.deleteCloudEntrySpecific("fjgUN3r");
     }
 
 
