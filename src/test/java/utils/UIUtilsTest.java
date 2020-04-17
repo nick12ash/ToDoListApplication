@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UIUtilsTest {
 
-    UIUtils uiUtils = new UIUtils();
+    UIUtils uiUtils = new UIUtils(new User("teamone"));
 
     ToDoItem todoItem2 = new ToDoItem("Don't forget the pana cotta", "teamone", new TimeStamp(2020,4,12));
 
@@ -25,7 +25,7 @@ class UIUtilsTest {
         User user = new User("George");
         user.toDoList.add(todoItem2);
 
-        List<String> list = uiUtils.syncCloudAndLocalToDatabase(user);
+        List<String> list = uiUtils.syncCloudAndLocalToDatabase();
         assertEquals("Success", list.get(0));
     }
 
@@ -43,9 +43,7 @@ class UIUtilsTest {
     }
     @Test
     void makeToDoItemInLocation() {
-        User user = new User("George");
-
-        String response = uiUtils.makeToDoItemInLocation(user, todoItem2);
+        String response = uiUtils.makeToDoItemInLocation(todoItem2);
 
         assertEquals("Item saved to cloud", response);
     }

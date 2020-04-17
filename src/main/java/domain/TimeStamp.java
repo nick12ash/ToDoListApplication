@@ -27,7 +27,7 @@ public class TimeStamp {
         this.year = year;
         this.month = month;
         this.day = day;
-        this.hour = 0;
+        this.hour = 9;
     }
 
 

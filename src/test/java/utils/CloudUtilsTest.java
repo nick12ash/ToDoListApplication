@@ -5,6 +5,7 @@ import domain.ToDoItem;
 import exceptions.ParameterIsNotJsonStringException;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +27,8 @@ class CloudUtilsTest {
 
     List<ToDoItem> list2 = new LinkedList<>();
 
-
+    CloudUtilsTest() throws SQLException {
+    }
 
 
     @Test
