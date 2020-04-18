@@ -245,8 +245,23 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
         var reminderButtonConstrains = new GridBagConstraints(1,4,1,1,1,1,GridBagConstraints.SOUTH,GridBagConstraints.CENTER,new Insets(20,1,20,1),0,0);
         panel.add(reminderButton,reminderButtonConstrains);
         reminderButton.addActionListener(e ->{
-            Reminder mostUrgentReminder = uiUtils.getMostUrgentReminder();
-            JOptionPane.showMessageDialog(panel, mostUrgentReminder.getMessage());
+            String reminderMessage = null;
+            JCheckBox mostUrgent = new JCheckBox("Most urgent reminder");
+            JCheckBox mostOld = new JCheckBox("Oldest reminder");
+            Object[] options = {mostUrgent,mostOld,"OK"};
+            JOptionPane.showOptionDialog(panel, "What kind of reminder do you want?", "Choose reminder type", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+            if(mostUrgent.isSelected() && mostOld.isSelected()){
+                reminderMessage = uiUtils.getBothRemindersMessage();
+            }
+            else if(mostUrgent.isSelected()){
+                reminderMessage = uiUtils.getMostUrgentReminderMessage();
+            }
+            else if(mostOld.isSelected()){
+                reminderMessage = uiUtils.getOldestReminderMessage();
+            }
+
+            JOptionPane.showMessageDialog(panel, reminderMessage);
+
         });
 
         //SHOW PIE CHART BUTTON

@@ -170,8 +170,27 @@ public class UIUtils {
         }
     }
 
+    public String getBothRemindersMessage() {
+        String mostUrgent = getMostUrgentReminderMessage();
+        String mostOld = getOldestReminderMessage();
+        return mostUrgent + "\n\n" + mostOld;
+    }
 
-    public Reminder getMostUrgentReminder() {
+    public String getMostUrgentReminderMessage() {
+        List<ToDoItem> list = getCombinedListFromSourceWithDuplicatesRemoved();
+        List<Reminder> reminderList = makeRemindersFromToDos(list);
+        Reminder mostUrgent = reminderList.get(0);
+        for (Reminder reminder : reminderList){
+            if(mostUrgent.timeLeft() > reminder.timeLeft()){
+                if(reminder.message.contains("ON-TIME")){
+                    mostUrgent = reminder;
+                }
+            }
+        }
+        return mostUrgent.getMessage();
+    }
+
+    public String getOldestReminderMessage() {
         List<ToDoItem> list = getCombinedListFromSourceWithDuplicatesRemoved();
         List<Reminder> reminderList = makeRemindersFromToDos(list);
         Reminder mostUrgent = reminderList.get(0);
@@ -180,7 +199,7 @@ public class UIUtils {
                 mostUrgent = reminder;
             }
         }
-        return mostUrgent;
+        return mostUrgent.getMessage();
     }
 
     private List<Reminder> makeRemindersFromToDos(List<ToDoItem> list) {
@@ -190,4 +209,7 @@ public class UIUtils {
         }
         return reminders;
     }
+
+
+
 }
