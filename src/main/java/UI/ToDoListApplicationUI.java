@@ -208,7 +208,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                         JOptionPane.showMessageDialog(panel, "Your " + "[ " + item.about + " ]" + " To-Do-Item has been updated.");
                     }
                     ToDoItem newToDoItem = new ToDoItem(memo, item.owner, newDueDate, new TimeStamp(item.createdDate), status, category, item.id);
-                    uiUtils.removeSelectedToDoItemFromSource(tableData, selectedRow);
+                    uiUtils.removeSelectedToDoItemFromAll(tableData, selectedRow);
                     uiUtils.makeToDoItemInLocation(newToDoItem);
                     uiUtils.updateTableDataFromSources(tableData);
                     editing = false;
@@ -224,7 +224,28 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 JOptionPane.showMessageDialog(panel, "Select the To-Do-Item you would like to delete.");
             } else {
                 int selectedRow = toDoTable.getSelectedRow();
-                String removeMessage = uiUtils.removeSelectedToDoItemFromSource(tableData, selectedRow);
+                String removeMessage;
+                JCheckBox cloud = new JCheckBox("Cloud");
+                JCheckBox local = new JCheckBox("Local");
+                JCheckBox database = new JCheckBox("Database");
+                JCheckBox all = new JCheckBox("All");
+                Object[] options = {cloud,local,database,all,"OK"};
+                JOptionPane.showOptionDialog(panel, "Delete item from which location?", "Choose location", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+                if(all.isSelected()){
+                    removeMessage = uiUtils.removeSelectedToDoItemFromAll(tableData, selectedRow);
+                }
+                else if(cloud.isSelected()){
+                    removeMessage = uiUtils.removeSelectedToDoItemFromCloud(tableData, selectedRow);
+                }
+                else if(database.isSelected()){
+                    removeMessage = uiUtils.removeSelectedToDoItemFromDatabase(tableData, selectedRow);
+                }
+                else if(local.isSelected()){
+                    removeMessage = uiUtils.removeSelectedToDoItemFromLocal(tableData,selectedRow);
+                }
+                else{
+                    removeMessage = "Select a place to delete from";
+                }
                 JOptionPane.showMessageDialog(panel,removeMessage);
                 uiUtils.updateTableDataFromSources(tableData);
             }
@@ -248,9 +269,10 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
             String reminderMessage = null;
             JCheckBox mostUrgent = new JCheckBox("Most urgent reminder");
             JCheckBox mostOld = new JCheckBox("Oldest reminder");
-            Object[] options = {mostUrgent,mostOld,"OK"};
+            JCheckBox both = new JCheckBox("Both");
+            Object[] options = {mostUrgent,mostOld,both,"OK"};
             JOptionPane.showOptionDialog(panel, "What kind of reminder do you want?", "Choose reminder type", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
-            if(mostUrgent.isSelected() && mostOld.isSelected()){
+            if((mostUrgent.isSelected() && mostOld.isSelected()) || both.isSelected()){
                 reminderMessage = uiUtils.getBothRemindersMessage();
             }
             else if(mostUrgent.isSelected()){

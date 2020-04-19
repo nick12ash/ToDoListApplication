@@ -11,6 +11,7 @@ public class Reminder {
     private LocalDate dateNow = LocalDate.now();
     private LocalDate dueDate;
     public String message;
+    public String overdueMessage;
     private Period period;
     private String status;
 
@@ -18,6 +19,7 @@ public class Reminder {
         TimeStamp timeStamp = new TimeStamp(item.dueDate);
         this.dueDate = LocalDate.of(timeStamp.getYear(), timeStamp.getMonth(), timeStamp.getDay());
         this.message = "Your '" + item.about + "' is almost due!";
+        this.overdueMessage = "Your '" + item.about + "' is past due!";
         this.period = Period.between(dateNow, dueDate);
         this.status = item.status;
     }
@@ -29,7 +31,7 @@ public class Reminder {
         return timeLeft;
     }
 
-    public String getMessage(){
+    public String getMessage(String message){
         String unitOfMeasure;
         int measurement;
         String pluralizer = "s";
