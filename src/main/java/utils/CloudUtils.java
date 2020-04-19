@@ -12,8 +12,6 @@ import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
 import javax.swing.*;
 import java.io.IOException;
-import java.net.UnknownHostException;
-import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,10 +20,10 @@ import java.util.Map;
 public class CloudUtils {
 
     private HttpRequestFactory requestFactory;
-    public String todosURL = "https://todoserver222.herokuapp.com/todos/";
-    public String teamURL = "https://todoserver222.herokuapp.com/teamone/todos/";
+    public String todosURL = "https://todoserver-team1.herokuapp.com/todos";
+    public String teamURL = "https://todoserver-team1.herokuapp.com/todos";
 
-    public CloudUtils() throws SQLException {
+    public CloudUtils() {
         requestFactory = new NetHttpTransport().createRequestFactory();
     }
 
