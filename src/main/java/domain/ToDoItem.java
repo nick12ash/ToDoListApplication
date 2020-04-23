@@ -94,24 +94,30 @@ public class ToDoItem {
 
     private String findMonthFromNumber(int month) {
         String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+        if(month > 12 || month <= 0){
+            return "Unkown";
+        }
         return months[month-1];
     }
 
     private String getSuffix(int number){
-        String[] numberSuffixes = {"th","st","nd","rd","th","th","th","th","th","th"};
+        String[] suffixes = {"th","st","nd","rd","th","th","th","th","th","th"};
         if(number < 10){
-            return numberSuffixes[number];
+            return suffixes[number];
         }
         else if(number < 20){
             return "th";
         }
         else if(number < 30){
             number = number - 20;
-            return numberSuffixes[number];
+            return suffixes[number];
         }
-        else {
+        else if(number < 40){
             number = number - 30;
-            return  numberSuffixes[number];
+            return  suffixes[number];
+        }
+        else{
+            return "gh";
         }
     }
 }

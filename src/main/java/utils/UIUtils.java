@@ -71,7 +71,7 @@ public class UIUtils {
             return responseList;
         }
         for (ToDoItem item : itemList){
-            responseList.add(databaseUtils.addItemToDatabase(item));
+            responseList.add(item.id + " " + databaseUtils.addItemToDatabase(item));
         }
         return responseList;
     }
@@ -126,16 +126,30 @@ public class UIUtils {
         }
     }
 
-    public String removeSelectedToDoItemFromSource(DefaultTableModel tableData, int selectedRow) {
+    public String removeSelectedToDoItemFromAll(DefaultTableModel tableData, int selectedRow){
+        String response = removeSelectedToDoItemFromCloud(tableData, selectedRow);
+        response += "\n" + removeSelectedToDoItemFromLocal(tableData, selectedRow);
+        response += "\n" + removeSelectedToDoItemFromDatabase(tableData, selectedRow);
+        return response;
+    }
+
+    public String removeSelectedToDoItemFromCloud(DefaultTableModel tableData, int selectedRow){
         int toDoItemID = (Integer) tableData.getValueAt(selectedRow,0);
-        String cloudResponse = cloudUtils.deleteSingleItem(toDoItemID);
-        String localResponse = user.deleteToDoItem(toDoItemID);
-        String databaseReponse = databaseUtils.deleteSingleItem(toDoItemID);
-        return String.format("%s\n%s\n%s\n",cloudResponse, localResponse, databaseReponse);
+        return cloudUtils.deleteSingleItem(toDoItemID);
+    }
+
+    public String removeSelectedToDoItemFromLocal(DefaultTableModel tableData, int selectedRow){
+        int toDoItemID = (Integer) tableData.getValueAt(selectedRow,0);
+        return user.deleteToDoItem(toDoItemID);
+    }
+
+    public String removeSelectedToDoItemFromDatabase(DefaultTableModel tableData, int selectedRow){
+        int toDoItemID = (Integer) tableData.getValueAt(selectedRow,0);
+        return databaseUtils.deleteSingleItem(toDoItemID);
     }
 
     public ToDoItem getSelectedToDoItemFromSource(DefaultTableModel tableData, int selectedRow) {
-        int toDoItemID = (Integer)tableData. getValueAt(selectedRow,0);
+        int toDoItemID = (Integer) tableData.getValueAt(selectedRow,0);
         ToDoItem chosenToDo = null;
         if (cloudUtils.checkConnection()){
             chosenToDo = getFromList(cloudUtils.readCloud(), toDoItemID);
@@ -170,17 +184,36 @@ public class UIUtils {
         }
     }
 
+    public String getBothRemindersMessage() {
+        String mostUrgent = getMostUrgentReminderMessage();
+        String mostOld = getOldestReminderMessage();
+        return mostUrgent + "\n\n" + mostOld;
+    }
 
-    public Reminder getMostUrgentReminder() {
+    public String getMostUrgentReminderMessage() {
         List<ToDoItem> list = getCombinedListFromSourceWithDuplicatesRemoved();
         List<Reminder> reminderList = makeRemindersFromToDos(list);
         Reminder mostUrgent = reminderList.get(0);
         for (Reminder reminder : reminderList){
             if(mostUrgent.timeLeft() > reminder.timeLeft()){
-                mostUrgent = reminder;
+                if(reminder.message.contains("ON-TIME")){
+                    mostUrgent = reminder;
+                }
             }
         }
-        return mostUrgent;
+        return mostUrgent.getMessage(mostUrgent.message);
+    }
+
+    public String getOldestReminderMessage() {
+        List<ToDoItem> list = getCombinedListFromSourceWithDuplicatesRemoved();
+        List<Reminder> reminderList = makeRemindersFromToDos(list);
+        Reminder oldestReminder = reminderList.get(0);
+        for (Reminder reminder : reminderList){
+            if(oldestReminder.timeLeft() > reminder.timeLeft()){
+                oldestReminder = reminder;
+            }
+        }
+        return oldestReminder.getMessage(oldestReminder.overdueMessage);
     }
 
     private List<Reminder> makeRemindersFromToDos(List<ToDoItem> list) {
@@ -190,4 +223,7 @@ public class UIUtils {
         }
         return reminders;
     }
+
+
+
 }

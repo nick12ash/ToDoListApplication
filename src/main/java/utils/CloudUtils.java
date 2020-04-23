@@ -12,8 +12,6 @@ import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
 import javax.swing.*;
 import java.io.IOException;
-import java.net.UnknownHostException;
-import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,10 +20,10 @@ import java.util.Map;
 public class CloudUtils {
 
     private HttpRequestFactory requestFactory;
-    public String todosURL = "https://todoserver222.herokuapp.com/todos/";
-    public String teamURL = "https://todoserver222.herokuapp.com/teamone/todos/";
+    public String todosURL = "https://todoserver-team1.herokuapp.com/todos/";
+    public String teamURL = "https://todoserver-team1.herokuapp.com/todos/";
 
-    public CloudUtils() throws SQLException {
+    public CloudUtils() {
         requestFactory = new NetHttpTransport().createRequestFactory();
     }
 
@@ -131,8 +129,8 @@ public class CloudUtils {
             for (JsonElement rootObject : rootObjects) {
                 var about = getStringFieldFromObject(rootObject,"about");
                 var owner = getStringFieldFromObject(rootObject,"owner");
-                var dueDateJson = getStringFieldFromObject(rootObject,"due_date");
-                var createdDateJson = getStringFieldFromObject(rootObject,"created_date");
+                var dueDateJson = getJsonStringFieldFromObject(rootObject,"due_date");
+                var createdDateJson = getJsonStringFieldFromObject(rootObject,"created_date");
                 var status = getStringFieldFromObject(rootObject,"status");
                 var category = getStringFieldFromObject(rootObject,"category");
                 var idNumber = getIntegerFieldFromObject(rootObject,"id");
@@ -149,6 +147,18 @@ public class CloudUtils {
             return rootObject.getAsJsonObject().getAsJsonPrimitive(fieldName).getAsString();
         } catch (NullPointerException e){
             return "n/a";
+        }
+    }
+
+    private String getJsonStringFieldFromObject(JsonElement rootObject,String fieldName){
+        try{
+            return rootObject.getAsJsonObject().getAsJsonPrimitive(fieldName).getAsString();
+        } catch (NullPointerException e){
+            return "{" +
+                    "year='" + 0 + '\'' +
+                    ", month='" + 0 + '\'' +
+                    ", day='" + 0 + '\'' +
+                    '}';
         }
     }
 

@@ -12,7 +12,7 @@ public class TimeStamp {
     private int hour;
 
 
-    // Formatted TimeStamp looks like TimeStamp{year='2020', month='12', day='14'}
+    // Formatted TimeStamp looks like {year='2020', month='12', day='14'}
     public TimeStamp(String jsonString){
         JsonParser jsonParser = new JsonParser();
         JsonElement rootElement = jsonParser.parse(jsonString);

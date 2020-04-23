@@ -130,7 +130,7 @@ class CloudUtilsTest {
 
     @Test
     void deleteSpecificCloudEntries(){
-        cloudUtils.deleteCloudEntrySpecific("fjgUN3r");
+        cloudUtils.deleteCloudEntrySpecific("fetjfKU");
     }
 
 

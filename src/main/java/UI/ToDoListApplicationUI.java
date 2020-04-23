@@ -9,10 +9,8 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.chart.util.Rotation;
 import utils.CloudUtils;
-import utils.Reminder;
 import utils.UIUtils;
 
-import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableModel;
@@ -72,7 +70,8 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
         var makeToDoButtonConstraints = new GridBagConstraints(0, 3, 1, 1, 1, 1, GridBagConstraints.SOUTH, GridBagConstraints.CENTER, new Insets(20, 1, 20, 1), 0, 0);
         panel.add(makeToDoButton,makeToDoButtonConstraints);
         makeToDoButton.addActionListener(e -> {
-            while (true) {
+            boolean creating = true;
+            while (creating) {
                 String memo = JOptionPane.showInputDialog(panel,
                         "What is the memo of the To-Do-Item",
                         "New To-Do-Item",
@@ -109,13 +108,14 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                                 "in this To-Do-Item correct?\n" + " [" + memo + " " + dueDateMonth + "/" + dueDateDay + "/" + dueDateYear + "]",
                         "To-Do-Item Confirmation", JOptionPane.YES_NO_OPTION);
                 if (submit == 0) {
-                    var newToDo = new ToDoItem(memo, user.name, new TimeStamp(dueDateYear, dueDateMonth, dueDateDay));
+                    var newToDo = new ToDoItem(memo, user.name, new TimeStamp(Integer.parseInt(dueDateYear), Integer.parseInt(dueDateMonth), Integer.parseInt(dueDateDay)));
                     JOptionPane.showMessageDialog(null, uiUtils.makeToDoItemInLocation(newToDo));
                     uiUtils.updateTableDataFromSources(tableData);
                     JOptionPane.showMessageDialog(null, "You are one step closer to being productive");
                 } else {
                     JOptionPane.showMessageDialog(null, "That's unfortunate...");
                 }
+                creating = false;
             }
         });
         ///VIEW TO-DO-ITEM BUTTON
@@ -142,7 +142,8 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 JOptionPane.showMessageDialog(panel, "Select the To-Do-Item you would like to edit.");
             }
             else {
-                while (true) {
+                boolean editing = true;
+                while (editing) {
                     int selectedRow = toDoTable.getSelectedRow();
                     ToDoItem item = uiUtils.getSelectedToDoItemFromSource(tableData, selectedRow);
                     String memo = (String) JOptionPane.showInputDialog(panel,
@@ -205,9 +206,10 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                         JOptionPane.showMessageDialog(panel, "Your " + "[ " + item.about + " ]" + " To-Do-Item has been updated.");
                     }
                     ToDoItem newToDoItem = new ToDoItem(memo, item.owner, newDueDate, new TimeStamp(item.createdDate), status, category, item.id);
-                    uiUtils.removeSelectedToDoItemFromSource(tableData, selectedRow);
+                    uiUtils.removeSelectedToDoItemFromAll(tableData, selectedRow);
                     uiUtils.makeToDoItemInLocation(newToDoItem);
                     uiUtils.updateTableDataFromSources(tableData);
+                    editing = false;
                 }
             }
         });
@@ -220,7 +222,28 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 JOptionPane.showMessageDialog(panel, "Select the To-Do-Item you would like to delete.");
             } else {
                 int selectedRow = toDoTable.getSelectedRow();
-                String removeMessage = uiUtils.removeSelectedToDoItemFromSource(tableData, selectedRow);
+                String removeMessage;
+                JCheckBox cloud = new JCheckBox("Cloud");
+                JCheckBox local = new JCheckBox("Local");
+                JCheckBox database = new JCheckBox("Database");
+                JCheckBox all = new JCheckBox("All");
+                Object[] options = {cloud,local,database,all,"OK"};
+                JOptionPane.showOptionDialog(panel, "Delete item from which location?", "Choose location", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+                if(all.isSelected()){
+                    removeMessage = uiUtils.removeSelectedToDoItemFromAll(tableData, selectedRow);
+                }
+                else if(cloud.isSelected()){
+                    removeMessage = uiUtils.removeSelectedToDoItemFromCloud(tableData, selectedRow);
+                }
+                else if(database.isSelected()){
+                    removeMessage = uiUtils.removeSelectedToDoItemFromDatabase(tableData, selectedRow);
+                }
+                else if(local.isSelected()){
+                    removeMessage = uiUtils.removeSelectedToDoItemFromLocal(tableData,selectedRow);
+                }
+                else{
+                    removeMessage = "Select a place to delete from";
+                }
                 JOptionPane.showMessageDialog(panel,removeMessage);
                 uiUtils.updateTableDataFromSources(tableData);
             }
@@ -241,8 +264,24 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
         var reminderButtonConstrains = new GridBagConstraints(1,4,1,1,1,1,GridBagConstraints.SOUTH,GridBagConstraints.CENTER,new Insets(20,1,20,1),0,0);
         panel.add(reminderButton,reminderButtonConstrains);
         reminderButton.addActionListener(e ->{
-            Reminder mostUrgentReminder = uiUtils.getMostUrgentReminder();
-            JOptionPane.showMessageDialog(panel, mostUrgentReminder.getMessage());
+            String reminderMessage = null;
+            JCheckBox mostUrgent = new JCheckBox("Most urgent reminder");
+            JCheckBox mostOld = new JCheckBox("Oldest reminder");
+            JCheckBox both = new JCheckBox("Both");
+            Object[] options = {mostUrgent,mostOld,both,"OK"};
+            JOptionPane.showOptionDialog(panel, "What kind of reminder do you want?", "Choose reminder type", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+            if((mostUrgent.isSelected() && mostOld.isSelected()) || both.isSelected()){
+                reminderMessage = uiUtils.getBothRemindersMessage();
+            }
+            else if(mostUrgent.isSelected()){
+                reminderMessage = uiUtils.getMostUrgentReminderMessage();
+            }
+            else if(mostOld.isSelected()){
+                reminderMessage = uiUtils.getOldestReminderMessage();
+            }
+
+            JOptionPane.showMessageDialog(panel, reminderMessage);
+
         });
 
         //SHOW PIE CHART BUTTON
