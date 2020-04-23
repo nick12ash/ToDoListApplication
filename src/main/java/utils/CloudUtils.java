@@ -135,7 +135,8 @@ public class CloudUtils {
                 var status = getStringFieldFromObject(rootObject,"status");
                 var category = getStringFieldFromObject(rootObject,"category");
                 var idNumber = getIntegerFieldFromObject(rootObject,"id");
-                list.add(new ToDoItem(about, owner, new TimeStamp(dueDateJson), new TimeStamp(createdDateJson), status, category, idNumber));
+                var idString = getStringFieldFromObject(rootObject,"id");
+                list.add(new ToDoItem(about, owner, new TimeStamp(dueDateJson), new TimeStamp(createdDateJson), status, category, idNumber, idString));
             }
         } else {
             return null;
@@ -175,28 +176,18 @@ public class CloudUtils {
         }
     }
 
-    private int getHighestIDNumber() {
-        int largest = 1;
-        for(ToDoItem i : readCloud()){
-            if(i.id > largest){
-                largest = i.id;
-            }
-        }
-        return largest;
-    }
-
     private boolean thisIsNotAJSONString(String json){
         return json.charAt(0) != '{' && json.charAt(0) != '[';
     }
 
-    public String deleteSingleItem(int identifier){
+    public String deleteSingleItem(String identifier){
         try {
             JsonParser jsonParser = new JsonParser();
             JsonElement rootElement = jsonParser.parse(retrieveCloud());
             JsonArray rootObjects = rootElement.getAsJsonArray();
             for (JsonElement rootObject : rootObjects) {
                 var id = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsString();
-                if (id.contains(Integer.toString(identifier))) {
+                if (id.contains(identifier)) {
                     deleteTodoItem(identifier);
                     return "Cloud Delete: Success";
                 }
@@ -209,7 +200,7 @@ public class CloudUtils {
 
     }
 
-    public void deleteTodoItem(int id) {
+    public void deleteTodoItem(String id) {
         try {
             HttpRequest deleteRequest = requestFactory.buildDeleteRequest(
                     new GenericUrl(todosURL + id));
@@ -225,7 +216,7 @@ public class CloudUtils {
         JsonElement rootElement = jsonParser.parse(retrieveCloud());
         JsonArray rootObjects = rootElement.getAsJsonArray();
         for (JsonElement rootObject : rootObjects){
-            var number = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsInt();
+            var number = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsString();
             deleteTodoItem(number);
         }
     }

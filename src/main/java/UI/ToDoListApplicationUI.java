@@ -205,7 +205,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                         newDueDate = new TimeStamp(item.dueDate);
                         JOptionPane.showMessageDialog(panel, "Your " + "[ " + item.about + " ]" + " To-Do-Item has been updated.");
                     }
-                    ToDoItem newToDoItem = new ToDoItem(memo, item.owner, newDueDate, new TimeStamp(item.createdDate), status, category, item.id);
+                    ToDoItem newToDoItem = new ToDoItem(memo, item.owner, newDueDate, new TimeStamp(item.createdDate), status, category, item.id, item.stringID);
                     uiUtils.removeSelectedToDoItemFromAll(tableData, selectedRow);
                     uiUtils.makeToDoItemInLocation(newToDoItem);
                     uiUtils.updateTableDataFromSources(tableData);
@@ -222,6 +222,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                 JOptionPane.showMessageDialog(panel, "Select the To-Do-Item you would like to delete.");
             } else {
                 int selectedRow = toDoTable.getSelectedRow();
+                String itemID = uiUtils.getIDFromItem(uiUtils.getItemFromList(tableData, selectedRow));
                 String removeMessage;
                 JCheckBox cloud = new JCheckBox("Cloud");
                 JCheckBox local = new JCheckBox("Local");
@@ -233,13 +234,13 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
                     removeMessage = uiUtils.removeSelectedToDoItemFromAll(tableData, selectedRow);
                 }
                 else if(cloud.isSelected()){
-                    removeMessage = uiUtils.removeSelectedToDoItemFromCloud(tableData, selectedRow);
+                    removeMessage = uiUtils.removeSelectedToDoItemFromCloud(itemID);
                 }
                 else if(database.isSelected()){
-                    removeMessage = uiUtils.removeSelectedToDoItemFromDatabase(tableData, selectedRow);
+                    removeMessage = uiUtils.removeSelectedToDoItemFromDatabase(itemID);
                 }
                 else if(local.isSelected()){
-                    removeMessage = uiUtils.removeSelectedToDoItemFromLocal(tableData,selectedRow);
+                    removeMessage = uiUtils.removeSelectedToDoItemFromLocal(itemID);
                 }
                 else{
                     removeMessage = "Select a place to delete from";
@@ -279,7 +280,9 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
             else if(mostOld.isSelected()){
                 reminderMessage = uiUtils.getOldestReminderMessage();
             }
-
+            else{
+                reminderMessage = "Pick a reminder type";
+            }
             JOptionPane.showMessageDialog(panel, reminderMessage);
 
         });

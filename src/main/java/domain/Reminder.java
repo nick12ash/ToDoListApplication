@@ -1,7 +1,4 @@
-package utils;
-
-import domain.TimeStamp;
-import domain.ToDoItem;
+package domain;
 
 import java.time.LocalDate;
 import java.time.Period;

@@ -22,7 +22,7 @@ class CloudUtilsTest {
 
     CloudUtils cloudUtils = new CloudUtils();
 
-    ToDoItem todoItem1 = new ToDoItem("Reminder for grilled cheese", "teamone", new TimeStamp(2020,4,4), currentTime, "Snoozed", "Unsorted", 10);
+    ToDoItem todoItem1 = new ToDoItem("Reminder for grilled cheese", "teamone", new TimeStamp(2020,4,4), currentTime, "Snoozed", "Unsorted", 10, null);
     ToDoItem todoItem2 = new ToDoItem("Don't forget the pana cotta", "teamone", new TimeStamp(2020,4,12));
 
     List<ToDoItem> list2 = new LinkedList<>();

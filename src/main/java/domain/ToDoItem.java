@@ -30,6 +30,8 @@ public class ToDoItem {
     @DatabaseField(id = true)
     public int id;
 
+    public String stringID = null;
+
     private LocalDate dateNow = LocalDate.now();
     private int dayNow = dateNow.getDayOfMonth();
     private int monthNow = dateNow.getMonthValue();
@@ -39,7 +41,7 @@ public class ToDoItem {
     public ToDoItem(){
     }
 
-    public ToDoItem(String about, String owner, TimeStamp dueDate, TimeStamp createdDate, String status, String category, int id){
+    public ToDoItem(String about, String owner, TimeStamp dueDate, TimeStamp createdDate, String status, String category, int id, String stringID){
         this.about = about;
         this.owner = owner;
         this.dueDate = dueDate.toString();
@@ -47,6 +49,7 @@ public class ToDoItem {
         this.status = status;
         this.itemCategory = category;
         this.id = id;
+        this.stringID = stringID;
     }
 
     public ToDoItem(String about, String owner, TimeStamp dueDate){
