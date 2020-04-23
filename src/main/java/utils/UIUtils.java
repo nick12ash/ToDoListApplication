@@ -1,5 +1,6 @@
 package utils;
 
+import domain.Reminder;
 import domain.ToDoItem;
 import domain.User;
 import org.javatuples.Pair;
@@ -127,24 +128,36 @@ public class UIUtils {
     }
 
     public String removeSelectedToDoItemFromAll(DefaultTableModel tableData, int selectedRow){
-        String response = removeSelectedToDoItemFromCloud(tableData, selectedRow);
-        response += "\n" + removeSelectedToDoItemFromLocal(tableData, selectedRow);
-        response += "\n" + removeSelectedToDoItemFromDatabase(tableData, selectedRow);
+        String itemID = getIDFromItem(getItemFromList(tableData, selectedRow));
+        String response = removeSelectedToDoItemFromCloud(itemID);
+        response += "\n" + removeSelectedToDoItemFromLocal(itemID);
+        response += "\n" + removeSelectedToDoItemFromDatabase(itemID);
         return response;
     }
 
-    public String removeSelectedToDoItemFromCloud(DefaultTableModel tableData, int selectedRow){
+    public ToDoItem getItemFromList(DefaultTableModel tableData, int selectedRow) {
         int toDoItemID = (Integer) tableData.getValueAt(selectedRow,0);
+        return getFromList(getCombinedListFromSourceWithDuplicatesRemoved(),toDoItemID);
+    }
+
+    public String getIDFromItem(ToDoItem item) {
+        if(item.stringID != null){
+            return item.stringID;
+        }
+        else{
+            return Integer.toString(item.id);
+        }
+    }
+
+    public String removeSelectedToDoItemFromCloud(String toDoItemID){
         return cloudUtils.deleteSingleItem(toDoItemID);
     }
 
-    public String removeSelectedToDoItemFromLocal(DefaultTableModel tableData, int selectedRow){
-        int toDoItemID = (Integer) tableData.getValueAt(selectedRow,0);
+    public String removeSelectedToDoItemFromLocal(String toDoItemID){
         return user.deleteToDoItem(toDoItemID);
     }
 
-    public String removeSelectedToDoItemFromDatabase(DefaultTableModel tableData, int selectedRow){
-        int toDoItemID = (Integer) tableData.getValueAt(selectedRow,0);
+    public String removeSelectedToDoItemFromDatabase(String toDoItemID){
         return databaseUtils.deleteSingleItem(toDoItemID);
     }
 

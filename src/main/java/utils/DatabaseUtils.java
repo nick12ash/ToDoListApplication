@@ -24,7 +24,7 @@ public class DatabaseUtils {
 
 
     public String addItemToDatabase(ToDoItem item){
-        ToDoItem transferItem = new ToDoItem(item.about,item.owner,new TimeStamp(item.dueDate),new TimeStamp(item.createdDate),item.status,item.itemCategory,item.id);
+        ToDoItem transferItem = new ToDoItem(item.about,item.owner,new TimeStamp(item.dueDate),new TimeStamp(item.createdDate),item.status,item.itemCategory,item.id,item.stringID);
         try{
             todoDao.create(transferItem);
             return "Success";
@@ -43,7 +43,7 @@ public class DatabaseUtils {
         }
     }
 
-    public String deleteSingleItem(int identifier){
+    public String deleteSingleItem(String identifier){
         try {
             var customQuery = todoDao.queryBuilder().where().eq("id", identifier).prepare();
             var itemToDelete = todoDao.query(customQuery);

@@ -22,6 +22,7 @@ public class CloudUtils {
     private HttpRequestFactory requestFactory;
     public String todosURL = "https://todoserver-team1.herokuapp.com/todos/";
     public String teamURL = "https://todoserver-team1.herokuapp.com/todos/";
+    private int id = 0;
 
     public CloudUtils() {
         requestFactory = new NetHttpTransport().createRequestFactory();
@@ -134,7 +135,8 @@ public class CloudUtils {
                 var status = getStringFieldFromObject(rootObject,"status");
                 var category = getStringFieldFromObject(rootObject,"category");
                 var idNumber = getIntegerFieldFromObject(rootObject,"id");
-                list.add(new ToDoItem(about, owner, new TimeStamp(dueDateJson), new TimeStamp(createdDateJson), status, category, idNumber));
+                var idString = getStringFieldFromObject(rootObject,"id");
+                list.add(new ToDoItem(about, owner, new TimeStamp(dueDateJson), new TimeStamp(createdDateJson), status, category, idNumber, idString));
             }
         } else {
             return null;
@@ -164,9 +166,13 @@ public class CloudUtils {
 
     private int getIntegerFieldFromObject(JsonElement rootObject, String fieldName) {
         try{
-            return rootObject.getAsJsonObject().getAsJsonPrimitive(fieldName).getAsInt();
+            id = rootObject.getAsJsonObject().getAsJsonPrimitive(fieldName).getAsInt() + 1;
+            return id - 1;
         } catch (NullPointerException | NumberFormatException e){
-            return -1;
+            if (id != 0) {
+                id += 1;
+            }
+            return id;
         }
     }
 
@@ -174,14 +180,14 @@ public class CloudUtils {
         return json.charAt(0) != '{' && json.charAt(0) != '[';
     }
 
-    public String deleteSingleItem(int identifier){
+    public String deleteSingleItem(String identifier){
         try {
             JsonParser jsonParser = new JsonParser();
             JsonElement rootElement = jsonParser.parse(retrieveCloud());
             JsonArray rootObjects = rootElement.getAsJsonArray();
             for (JsonElement rootObject : rootObjects) {
                 var id = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsString();
-                if (id.contains(Integer.toString(identifier))) {
+                if (id.contains(identifier)) {
                     deleteTodoItem(identifier);
                     return "Cloud Delete: Success";
                 }
@@ -194,7 +200,7 @@ public class CloudUtils {
 
     }
 
-    public void deleteTodoItem(int id) {
+    public void deleteTodoItem(String id) {
         try {
             HttpRequest deleteRequest = requestFactory.buildDeleteRequest(
                     new GenericUrl(todosURL + id));
@@ -210,7 +216,7 @@ public class CloudUtils {
         JsonElement rootElement = jsonParser.parse(retrieveCloud());
         JsonArray rootObjects = rootElement.getAsJsonArray();
         for (JsonElement rootObject : rootObjects){
-            var number = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsInt();
+            var number = rootObject.getAsJsonObject().getAsJsonPrimitive("id").getAsString();
             deleteTodoItem(number);
         }
     }
