@@ -331,6 +331,7 @@ public class ToDoListApplicationUI extends JFrame implements ActionListener{
       
         //Read data from cloud for table before window open
         uiUtils.updateTableDataFromSources(tableData);
+        JOptionPane.showMessageDialog(panel, uiUtils.getMostUrgentReminderMessage());
 
 
         ///Application Window
