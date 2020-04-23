@@ -22,6 +22,7 @@ public class CloudUtils {
     private HttpRequestFactory requestFactory;
     public String todosURL = "https://todoserver-team1.herokuapp.com/todos/";
     public String teamURL = "https://todoserver-team1.herokuapp.com/todos/";
+    private int id = 0;
 
     public CloudUtils() {
         requestFactory = new NetHttpTransport().createRequestFactory();
@@ -164,10 +165,24 @@ public class CloudUtils {
 
     private int getIntegerFieldFromObject(JsonElement rootObject, String fieldName) {
         try{
-            return rootObject.getAsJsonObject().getAsJsonPrimitive(fieldName).getAsInt();
+            id = rootObject.getAsJsonObject().getAsJsonPrimitive(fieldName).getAsInt() + 1;
+            return id - 1;
         } catch (NullPointerException | NumberFormatException e){
-            return -1;
+            if (id != 0) {
+                id += 1;
+            }
+            return id;
         }
+    }
+
+    private int getHighestIDNumber() {
+        int largest = 1;
+        for(ToDoItem i : readCloud()){
+            if(i.id > largest){
+                largest = i.id;
+            }
+        }
+        return largest;
     }
 
     private boolean thisIsNotAJSONString(String json){
