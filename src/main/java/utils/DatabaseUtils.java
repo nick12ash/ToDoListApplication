@@ -7,7 +7,6 @@ import com.j256.ormlite.table.TableUtils;
 import domain.TimeStamp;
 import domain.ToDoItem;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.util.LinkedList;
 import java.util.List;
 

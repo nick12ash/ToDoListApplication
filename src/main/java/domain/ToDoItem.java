@@ -94,7 +94,7 @@ public class ToDoItem {
 
     private String findMonthFromNumber(int month) {
         String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-        if(month > 12 || month < 0){
+        if(month > 12 || month <= 0){
             return "Unkown";
         }
         return months[month-1];
