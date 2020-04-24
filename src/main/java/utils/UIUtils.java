@@ -209,7 +209,7 @@ public class UIUtils {
         Reminder mostUrgent = reminderList.get(0);
         for (Reminder reminder : reminderList){
             if(mostUrgent.timeLeft() > reminder.timeLeft()){
-                if(reminder.message.contains("ON-TIME")){
+                if(reminder.getMessage(" ").contains("ON-TIME")){
                     mostUrgent = reminder;
                 }
             }
